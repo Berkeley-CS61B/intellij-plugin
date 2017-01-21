@@ -33,6 +33,11 @@
             description="Run the CS 61B style checker" icon="/icons/hilf.png">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="AnalyzeMenu"/>
     </action>
+    <action id="61B.JavaVisualizer" class="edu.berkeley.cs61b.JavaVisualizerAction" text="Java Visualizer"
+            description="Show the Java Visualizer" icon="/icons/hug.png">
+      <add-to-group group-id="DebugMainMenu" anchor="last"/>
+      <add-to-group group-id="XDebugger.ToolWindow.LeftToolbar" anchor="last"/>
+    </action>
   </actions>
 
 </idea-plugin>
