@@ -35,7 +35,7 @@
     </action>
     <action id="61B.JavaVisualizer" class="edu.berkeley.cs61b.JavaVisualizerAction" text="Java Visualizer"
             description="Show the Java Visualizer" icon="/icons/hug.png">
-      <add-to-group group-id="DebugMainMenu" anchor="last"/>
+      <!--<add-to-group group-id="DebugMainMenu" anchor="last"/>-->
       <add-to-group group-id="XDebugger.ToolWindow.LeftToolbar" anchor="last"/>
     </action>
   </actions>

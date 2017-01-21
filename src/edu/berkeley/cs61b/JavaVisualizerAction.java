@@ -14,10 +14,11 @@ import javafx.scene.Scene;
 import javafx.scene.web.WebView;
 
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 
 public class JavaVisualizerAction extends AnAction {
 	private static final String CONTENT_ID = "61B.JavaVisualizerContent";
+
+	private JComponent component = null;
 
 	@Override
 	public void actionPerformed(AnActionEvent e) {
@@ -47,14 +48,17 @@ public class JavaVisualizerAction extends AnAction {
 	}
 
 	private JComponent createContent() {
-		JFXPanel jfxPanel = new JFXPanel();
+		if (component != null) {
+			return component;
+		}
 
+		final JFXPanel jfxPanel = new JFXPanel();
 		Platform.runLater(() -> {
 			WebView webView = new WebView();
 			jfxPanel.setScene(new Scene(webView));
-			webView.getEngine().load("http://www.stackoverflow.com/");
+			webView.getEngine().load(getClass().getResource("/web/visualizer.html").toExternalForm());
 		});
-		return jfxPanel;
+		return (this.component = jfxPanel);
 	}
 
 	private XDebugSession getDebugSession(Project project) {
