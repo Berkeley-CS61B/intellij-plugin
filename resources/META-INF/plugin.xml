@@ -29,7 +29,10 @@
   </extensions>
 
   <actions>
-    <!-- Add your actions here -->
+    <action id="61B.CheckStyle" class="edu.berkeley.cs61b.CheckStyleAction" text="Check Style"
+            description="Run the CS 61B style checker">
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="AnalyzeMenu"/>
+    </action>
   </actions>
 
 </idea-plugin>
