@@ -25,12 +25,12 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
+    <toolWindow id="Style Checker" anchor="bottom" factoryClass="edu.berkeley.cs61b.CheckStyleToolWindowFactory" icon="/icons/hilf.png"/>
   </extensions>
 
   <actions>
     <action id="61B.CheckStyle" class="edu.berkeley.cs61b.CheckStyleAction" text="Check Style"
-            description="Run the CS 61B style checker">
+            description="Run the CS 61B style checker" icon="/icons/hilf.png">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="AnalyzeMenu"/>
     </action>
   </actions>
