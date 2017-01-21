@@ -47,7 +47,7 @@ public class CheckStyleAction extends AnAction {
 				List<File> checkerFiles = new ArrayList<>();
 				collectFiles(inputFiles, checkerFiles);
 
-				//consoleView.print(project.getBasePath() + "\n", ConsoleViewContentType.SYSTEM_OUTPUT);
+				consoleView.clear();
 				String message = String.format("Running style checker on %d file(s)...\n", checkerFiles.size());
 				consoleView.print(message, ConsoleViewContentType.SYSTEM_OUTPUT);
 				runCheckStyle(project, consoleView, checkerFiles);
@@ -74,9 +74,11 @@ public class CheckStyleAction extends AnAction {
 		try {
 			PropertiesExpander properties = new PropertiesExpander(System.getProperties());
 			InputSource configSource = new InputSource(getClass().getClassLoader().getResourceAsStream("61b_checks.xml"));
+
 			config = ConfigurationLoader.loadConfiguration(configSource, properties, true);
 		} catch (Exception e) {
 			consoleView.print("Unable to start style checker (1): " + e.getMessage() + "\n", ConsoleViewContentType.ERROR_OUTPUT);
+			e.printStackTrace();
 			return;
 		}
 
