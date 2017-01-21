@@ -22,16 +22,19 @@ import org.xml.sax.InputSource;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class CheckStyleAction extends AnAction {
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		Project project = event.getData(PlatformDataKeys.PROJECT);
-		VirtualFile file = event.getData(CommonDataKeys.VIRTUAL_FILE);
+		VirtualFile[] inputFiles = event.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
 
-		if (project != null && file != null) {
+		if (project != null && inputFiles != null) {
 			// get the Style Checker ToolWindow
 			final ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow("Style Checker");
 			toolWindow.activate(() -> {
@@ -40,12 +43,28 @@ public class CheckStyleAction extends AnAction {
 				Content content = contentManager.findContent("");
 				ConsoleView consoleView = (ConsoleView) content.getComponent();
 
-				List<File> files = new ArrayList<>();
-				files.add(new File(file.getPath()));
+				// iteratively add all files to a list
+				List<File> checkerFiles = new ArrayList<>();
+				collectFiles(inputFiles, checkerFiles);
 
-				consoleView.print("Running style checker on " + file.getPath() + "\n", ConsoleViewContentType.SYSTEM_OUTPUT);
-				runCheckStyle(consoleView, files);
+				String message = String.format("Running style checker on %d file(s)...\n", checkerFiles.size());
+				consoleView.print(message, ConsoleViewContentType.SYSTEM_OUTPUT);
+				runCheckStyle(consoleView, checkerFiles);
 			});
+		}
+	}
+
+	private void collectFiles(VirtualFile[] parent, List<File> list) {
+		LinkedList<VirtualFile> sources = new LinkedList<>();
+		Collections.addAll(sources, parent);
+
+		while (sources.size() > 0) {
+			VirtualFile f = sources.removeFirst();
+			if (f.isDirectory()) {
+				Collections.addAll(sources, f.getChildren());
+			} else {
+				list.add(new File(f.getPath()));
+			}
 		}
 	}
 
