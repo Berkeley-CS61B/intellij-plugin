@@ -1,5 +1,6 @@
 package edu.berkeley.cs61b;
 
+import com.intellij.execution.filters.OpenFileHyperlinkInfo;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 public class CheckStyleAction extends AnAction {
 
@@ -47,9 +47,10 @@ public class CheckStyleAction extends AnAction {
 				List<File> checkerFiles = new ArrayList<>();
 				collectFiles(inputFiles, checkerFiles);
 
+				//consoleView.print(project.getBasePath() + "\n", ConsoleViewContentType.SYSTEM_OUTPUT);
 				String message = String.format("Running style checker on %d file(s)...\n", checkerFiles.size());
 				consoleView.print(message, ConsoleViewContentType.SYSTEM_OUTPUT);
-				runCheckStyle(consoleView, checkerFiles);
+				runCheckStyle(project, consoleView, checkerFiles);
 			});
 		}
 	}
@@ -68,7 +69,7 @@ public class CheckStyleAction extends AnAction {
 		}
 	}
 
-	private void runCheckStyle(ConsoleView consoleView, List<File> files) {
+	private void runCheckStyle(Project project, ConsoleView consoleView, List<File> files) {
 		Configuration config;
 		try {
 			PropertiesExpander properties = new PropertiesExpander(System.getProperties());
@@ -84,7 +85,8 @@ public class CheckStyleAction extends AnAction {
 			ClassLoader e = Checker.class.getClassLoader();
 			c.setModuleClassLoader(e);
 			c.configure(config);
-			c.addListener(new LoggingAuditListener(consoleView));
+			c.setBasedir(project.getBasePath());
+			c.addListener(new LoggingAuditListener(project, consoleView));
 
 			int numErrs = c.process(files);
 			c.destroy();
@@ -96,14 +98,12 @@ public class CheckStyleAction extends AnAction {
 	}
 
 	private class LoggingAuditListener implements AuditListener {
-		private ConsoleView consoleView;
+		private ConsoleView console;
+		private Project project;
 
-		LoggingAuditListener(ConsoleView consoleView) {
-			this.consoleView = consoleView;
-		}
-
-		private void println(String str) {
-			consoleView.print(str + "\n", ConsoleViewContentType.NORMAL_OUTPUT);
+		LoggingAuditListener(Project project, ConsoleView console) {
+			this.project = project;
+			this.console = console;
 		}
 
 		@Override
@@ -124,18 +124,19 @@ public class CheckStyleAction extends AnAction {
 
 		@Override
 		public void addError(AuditEvent e) {
-			String out = String.format("%s:%d:%d: %s",
-					e.getFileName(),
-					e.getLine(),
-					e.getColumn(),
-					e.getMessage()
-			);
-			println(out);
+			VirtualFile f = project.getBaseDir().findFileByRelativePath(e.getFileName());
+			if (f != null) {
+				String linkText = e.getFileName() + ":" + e.getLine();
+				if (e.getColumn() != 0) {
+					linkText += ":" + e.getColumn();
+				}
+				console.printHyperlink(linkText, new OpenFileHyperlinkInfo(project, f, e.getLine() - 1, e.getColumn()));
+			}
+			console.print(": " + e.getMessage() + "\n", ConsoleViewContentType.NORMAL_OUTPUT);
 		}
 
 		@Override
 		public void addException(AuditEvent e, Throwable throwable) {
-			println("exception");
 		}
 	}
 }
