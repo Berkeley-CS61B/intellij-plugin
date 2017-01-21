@@ -8,6 +8,10 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.content.Content;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.XDebuggerManager;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Scene;
+import javafx.scene.web.WebView;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -43,7 +47,14 @@ public class JavaVisualizerAction extends AnAction {
 	}
 
 	private JComponent createContent() {
-		return new JLabel("insert some content here");
+		JFXPanel jfxPanel = new JFXPanel();
+
+		Platform.runLater(() -> {
+			WebView webView = new WebView();
+			jfxPanel.setScene(new Scene(webView));
+			webView.getEngine().load("http://www.stackoverflow.com/");
+		});
+		return jfxPanel;
 	}
 
 	private XDebugSession getDebugSession(Project project) {
