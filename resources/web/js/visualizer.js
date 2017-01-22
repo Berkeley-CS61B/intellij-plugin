@@ -11,7 +11,30 @@ $(document).ready(function () {
 	var trace = {
 		"code":"",
 		"stdin":"",
-		"trace":[{ "stdout":"", "event":"step_line", "line":11, "stack_to_render":[{   "func_name":"main:11",   "encoded_locals":{  "stack":[ "REF", 169  ],  "queue":[ "REF", 172  ]   },   "ordered_varnames":[  "stack",  "queue"   ],   "parent_frame_id_list":[   ],   "is_highlighted":true,   "is_zombie":false,   "is_parent":false,   "unique_hash":"16",   "frame_id":16} ], "globals":{"StackQueue.global":5 }, "ordered_globals":["StackQueue.global" ], "func_name":"main", "heap":{"169":[   "STACK",   "stack-last",   "stack-first"],"172":[   "QUEUE"] }  }],
+		"trace":[{
+			"stdout":"",
+			"event":"step_line",
+			"line":40,
+			"stack_to_render":[{
+				"func_name":"main:40",
+				"encoded_locals":{"mc":["REF",145]},
+				"ordered_varnames":["mc"],
+				"parent_frame_id_list":[],
+				"is_highlighted":true,
+				"is_zombie":false,
+				"is_parent":false,
+				"unique_hash":"195",
+				"frame_id":195
+			}],
+			"globals":{},
+			"ordered_globals":[],
+			"func_name":"main",
+			"heap":{
+				"145":["INSTANCE","LinkedList",["first",["REF",172]]],
+				"172":["INSTANCE","Node",["next",["REF",174]],["name","DK Sr."]],
+				"174":["INSTANCE","Node",["next",["REF",176]],["name","DK"]],
+				"176":["INSTANCE","Node",["next",null],["name","DK Jr."]]}
+		}],
 		"userlog":""
 	};
 	var v = new ExecutionVisualizer('root', trace, opts);
