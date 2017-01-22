@@ -1,17 +1,15 @@
 <idea-plugin version="2">
-  <id>com.your.company.unique.plugin.id</id>
-  <name>Plugin display name here</name>
+  <id>edu.berkeley.cs61b.plugin</id>
+  <name>CS 61B Plugin</name>
   <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <vendor email="cs61b@berkeley.edu" url="http://datastructur.es">CS 61B</vendor>
 
   <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+      Plugin for Berkeley's CS 61B.
     ]]></description>
 
   <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
+      Made plugin.
     ]]>
   </change-notes>
 
@@ -25,15 +23,15 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
-    <toolWindow id="Style Checker" anchor="bottom" factoryClass="edu.berkeley.cs61b.CheckStyleToolWindowFactory" icon="/icons/hilf.png"/>
+    <toolWindow id="Style Checker" anchor="bottom" factoryClass="edu.berkeley.cs61b.plugin.CheckStyleToolWindowFactory" icon="/icons/hilf.png"/>
   </extensions>
 
   <actions>
-    <action id="61B.CheckStyle" class="edu.berkeley.cs61b.CheckStyleAction" text="Check Style"
+    <action id="61B.CheckStyle" class="edu.berkeley.cs61b.plugin.CheckStyleAction" text="Check Style"
             description="Run the CS 61B style checker" icon="/icons/hilf.png">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="AnalyzeMenu"/>
     </action>
-    <action id="61B.JavaVisualizer" class="edu.berkeley.cs61b.JavaVisualizerAction" text="Java Visualizer"
+    <action id="61B.JavaVisualizer" class="edu.berkeley.cs61b.plugin.JavaVisualizerAction" text="Java Visualizer"
             description="Show the Java Visualizer" icon="/icons/hug.png">
       <!--<add-to-group group-id="DebugMainMenu" anchor="last"/>-->
       <add-to-group group-id="XDebugger.ToolWindow.LeftToolbar" anchor="last"/>

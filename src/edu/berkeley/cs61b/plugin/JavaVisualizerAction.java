@@ -1,4 +1,4 @@
-package edu.berkeley.cs61b;
+package edu.berkeley.cs61b.plugin;
 
 import com.intellij.debugger.DebuggerManager;
 import com.intellij.debugger.engine.DebugProcess;

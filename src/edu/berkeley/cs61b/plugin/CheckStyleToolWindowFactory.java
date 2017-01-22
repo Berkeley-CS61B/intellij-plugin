@@ -1,4 +1,4 @@
-package edu.berkeley.cs61b;
+package edu.berkeley.cs61b.plugin;
 
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
