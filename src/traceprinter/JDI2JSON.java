@@ -180,15 +180,14 @@ public class JDI2JSON {
 
 	// returns null when nothing changed since the last time
 	// (or when only event type changed and new value is "step_line")
-	public ArrayList<JsonObject> convertExecutionPoint(Event e, Location loc, ThreadReference t) {
+	public ArrayList<JsonObject> convertExecutionPoint(ThreadReference t) throws IncompatibleThreadStateException {
 		stdout.pull();
 		stderr.pull();
 
-		//System.out.println(e);
+		Location loc = t.frame(t.frameCount() - 1).location();
 
 		ArrayList<JsonObject> results = new ArrayList<>();
-
-		if (loc.method().name().indexOf("access$") >= 0) return results; // don't visualize synthetic access$000 methods
+		if (loc.method().name().contains("access$")) return results; // don't visualize synthetic access$000 methods
 
 		heap_done = new TreeSet<Long>();
 		heap = new TreeMap<>();
@@ -197,34 +196,12 @@ public class JDI2JSON {
 
 		JsonObjectBuilder result = Json.createObjectBuilder();
 		result.add("stdout", stdout.getContents());
-		/*if (e instanceof MethodEntryEvent) {
-			result.add("event", "call");
-			//frame_stack.add(frame_ticker++);
-			result.add("line", loc.lineNumber());
-		} else if (e instanceof MethodExitEvent) {
-			returnValue = convertValue(((MethodExitEvent) e).returnValue());
-			result.add("event", "return");
-			result.add("line", loc.lineNumber());
-		} else if (e instanceof BreakpointEvent || e instanceof StepEvent) {
-			result.add("event", "step_line");
-			result.add("line", loc.lineNumber());
-		} else if (e instanceof ExceptionEvent) {
-			// we could compare this with null to see if it was caught.
-			// Location katch = ((ExceptionEvent)e).catchLocation();
-
-			// but it turns out we don't care, since either the code
-			// keeps going or just halts appropriately anyway.
-
-			result.add("event", "exception");
-
-			result.add("exception_msg", exceptionMessage((ExceptionEvent) e));
-		}*/
 		result.add("event", "step_line");
 		result.add("line", loc.lineNumber());
 
 		JsonArrayBuilder frames = Json.createArrayBuilder();
 		StackFrame lastNonUserFrame = null;
-		try {
+
 			boolean firstFrame = true;
 			for (StackFrame sf : t.frames()) {
 				if (!showFramesInLocation(sf.location())) {
@@ -242,15 +219,8 @@ public class JDI2JSON {
 				firstFrame = false;
 				returnValue = null;
 			}
-		} catch (IncompatibleThreadStateException ex) {
-			//thread was not suspended .. should not normally happen
 
-			throw new RuntimeException("ITSE");
-		}
 		result.add("stack_to_render", frames);
-
-		//if (e instanceof MethodExitEvent)
-		//  frame_stack.remove(frame_stack.size()-1);
 
 		JsonObjectBuilder statics = Json.createObjectBuilder();
 		JsonArrayBuilder statics_a = Json.createArrayBuilder();
@@ -265,8 +235,6 @@ public class JDI2JSON {
 		if (stdinRT != null && stdinRT.isInitialized()) {
 			int stdinPosition = ((IntegerValue) stdinRT.getValue(stdinRT.fieldByName("position"))).value();
 			result.add("stdinPosition", stdinPosition);
-			/*            statics.add("stdin.Position", stdinPosition);
-                          statics_a.add("stdin.Position");*/
 		}
 
 		result.add("globals", statics);
