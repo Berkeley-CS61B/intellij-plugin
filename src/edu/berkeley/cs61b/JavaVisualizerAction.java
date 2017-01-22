@@ -53,6 +53,7 @@ public class JavaVisualizerAction extends AnAction {
 		}
 
 		final JFXPanel jfxPanel = new JFXPanel();
+		Platform.setImplicitExit(false);
 		Platform.runLater(() -> {
 			WebView webView = new WebView();
 			jfxPanel.setScene(new Scene(webView));
