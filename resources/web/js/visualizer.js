@@ -16,6 +16,6 @@ $(document).ready(function () {
 			trace: trace
 		};
 		var v = new ExecutionVisualizer('root', container, opts);
-	}
+	};
 	window.status = "Ready";
 });
