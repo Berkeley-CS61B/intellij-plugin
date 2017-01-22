@@ -1,17 +1,5 @@
 $(document).ready(function () {
-	var opts = {
-		hideCode: true,
-		hideOutput: true,
-		disableHeapNesting: true,
-		textualMemoryLabels: false,
-		visualizerIdOverride: "1",
-		startingInstruction: 0,
-		lang: "java"
-	};
-	var trace = {
-		"code":"",
-		"stdin":"",
-		"trace":[{
+	var trace = [{
 			"stdout":"",
 			"event":"step_line",
 			"line":40,
@@ -34,8 +22,27 @@ $(document).ready(function () {
 				"172":["INSTANCE","Node",["next",["REF",174]],["name","DK Sr."]],
 				"174":["INSTANCE","Node",["next",["REF",176]],["name","DK"]],
 				"176":["INSTANCE","Node",["next",null],["name","DK Jr."]]}
-		}],
-		"userlog":""
-	};
-	var v = new ExecutionVisualizer('root', trace, opts);
+		}];
+	visualize(JSON.stringify(trace));
 });
+
+var visualizer = {
+	visualize: function (traceJSON) {
+		var opts = {
+			hideCode: true,
+			hideOutput: true,
+			disableHeapNesting: true,
+			textualMemoryLabels: false,
+			visualizerIdOverride: "1",
+			startingInstruction: 0,
+			lang: "java"
+		};
+		var trace = JSON.parse(traceJSON);
+		var container = {
+			code: "",
+			stdin: "",
+			trace: trace
+		};
+		var v = new ExecutionVisualizer('root', container, opts);
+	}
+};
