@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>edu.berkeley.cs61b.plugin</id>
   <name>CS 61B Plugin</name>
-  <version>1.0</version>
+  <version>1.0.3</version>
   <vendor email="cs61b@berkeley.edu" url="http://datastructur.es">CS 61B</vendor>
 
   <description><![CDATA[

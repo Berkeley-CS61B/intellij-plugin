@@ -8,6 +8,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
@@ -22,6 +23,8 @@ import com.puppycrawl.tools.checkstyle.api.Configuration;
 import org.xml.sax.InputSource;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -87,7 +90,6 @@ public class CheckStyleAction extends AnAction {
 			ClassLoader e = Checker.class.getClassLoader();
 			c.setModuleClassLoader(e);
 			c.configure(config);
-			c.setBasedir(project.getBasePath());
 			c.addListener(new LoggingAuditListener(project, consoleView));
 
 			int numErrs = c.process(files);
@@ -126,13 +128,19 @@ public class CheckStyleAction extends AnAction {
 
 		@Override
 		public void addError(AuditEvent e) {
-			VirtualFile f = project.getBaseDir().findFileByRelativePath(e.getFileName());
+			VirtualFile f = LocalFileSystem.getInstance().findFileByPath(e.getFileName());
 			if (f != null) {
-				String linkText = e.getFileName() + ":" + e.getLine();
+				Path file_path = Paths.get(f.getPath());
+				Path base_path = Paths.get(project.getBasePath());
+				String relative = base_path.relativize(file_path).toString();
+
+				String linkText = relative + ":" + e.getLine();
 				if (e.getColumn() != 0) {
 					linkText += ":" + e.getColumn();
 				}
 				console.printHyperlink(linkText, new OpenFileHyperlinkInfo(project, f, e.getLine() - 1, e.getColumn()));
+			} else {
+				console.print(e.getFileName() + ":" + e.getLine(), ConsoleViewContentType.NORMAL_OUTPUT);
 			}
 			console.print(": " + e.getMessage() + "\n", ConsoleViewContentType.NORMAL_OUTPUT);
 		}
