@@ -35,14 +35,7 @@ import com.sun.jdi.StackFrame;
 import com.sun.jdi.StringReference;
 import com.sun.jdi.ThreadReference;
 import com.sun.jdi.Value;
-import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.VoidValue;
-import com.sun.jdi.event.BreakpointEvent;
-import com.sun.jdi.event.Event;
-import com.sun.jdi.event.ExceptionEvent;
-import com.sun.jdi.event.MethodEntryEvent;
-import com.sun.jdi.event.MethodExitEvent;
-import com.sun.jdi.event.StepEvent;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -50,11 +43,6 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,8 +51,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class JDI2JSON {
-
-	public static StringBuilder userlogged;
 	public static boolean showVoid = true;
 	public static String[] builtin_packages = {"java", "javax", "sun", "com.sun", "traceprinter"};
 	public static String[] PU_stdlib = {"BinaryIn", "BinaryOut", "BinaryStdIn", "BinaryStdOut",
@@ -80,67 +66,12 @@ public class JDI2JSON {
 			new ArrayList<String>
 					(Arrays.asList
 							("Byte Short Integer Long Float Double Character Boolean".split(" ")));
-	private VirtualMachine vm;
-	private InputPuller stdout, stderr;
 	private JsonObject last_ep = null;
 	private TreeMap<Long, ObjectReference> heap;
 	private TreeSet<Long> heap_done;
 	/*    private ArrayList<Long> frame_stack = new ArrayList<Long>();*/
 	private long frame_ticker = 0;
 	private JsonArray convertVoid = jsonArray("VOID");
-
-	public JDI2JSON(VirtualMachine vm, InputStream vm_stdout, InputStream vm_stderr, JsonObject optionsObject) {
-		stdout = new InputPuller(vm_stdout);
-		stderr = new InputPuller(vm_stderr);
-		//frame_stack.add(frame_ticker++);
-		/*if (optionsObject.containsKey("showStringsAsValues"))
-			showStringsAsValues
-					= optionsObject.getBoolean("showStringsAsValues");
-		if (optionsObject.containsKey("showAllFields"))
-			showAllFields = optionsObject.getBoolean("showAllFields");*/
-	}
-
-	public static void userlog(String S) {
-		if (userlogged == null) userlogged = new StringBuilder();
-		userlogged.append(S).append("\n");
-	}
-
-	static JsonObject compileErrorOutput(String usercode, String errmsg, long row, long col) {
-		return output(usercode,
-				Json.createArrayBuilder().add
-						(Json.createObjectBuilder()
-								.add("line", "" + row)
-								.add("event", "uncaught_exception")
-								.add("offset", "" + col)
-								.add("exception_msg", errmsg))
-						.build()
-		);
-	}
-
-	static String fakify(String realcode) {
-		String[] x = realcode.split("\n", -1);
-		for (int i = 0; i < x.length; i++) {
-			int pos = x[i].indexOf("//><");
-			if (pos >= 0)
-				x[i] = x[i].substring(pos + 4);
-		}
-		StringBuilder sb = new StringBuilder();
-		for (String s : x) {
-			sb.append("\n");
-			sb.append(s);
-		}
-		return sb.substring(1);
-	}
-
-	static JsonObject output(String usercode, JsonArray trace) {
-		JsonObjectBuilder result = Json.createObjectBuilder();
-		result
-				.add("code", fakify(usercode))
-				.add("stdin", "")//InMemory.stdin) // TODO XXX
-				.add("trace", trace);
-		if (userlogged != null) result.add("userlog", userlogged.toString());
-		return result.build();
-	}
 
 	static JsonValue jsonInt(long l) {
 		return Json.createArrayBuilder().add(l).build().getJsonNumber(0);
@@ -164,26 +95,9 @@ public class JDI2JSON {
 		return result.build();
 	}
 
-	// add at specified position, or end if -1
-	static JsonArray jsonModifiedArray(JsonArray arr, int tgt, JsonValue v) {
-		JsonArrayBuilder result = Json.createArrayBuilder();
-		int i = 0;
-		for (JsonValue w : arr) {
-			if (i == tgt) result.add(v);
-			else result.add(w);
-			i++;
-		}
-		if (tgt == -1)
-			result.add(v);
-		return result.build();
-	}
-
 	// returns null when nothing changed since the last time
 	// (or when only event type changed and new value is "step_line")
 	public ArrayList<JsonObject> convertExecutionPoint(ThreadReference t) throws IncompatibleThreadStateException {
-		stdout.pull();
-		stderr.pull();
-
 		Location loc = t.frame(t.frameCount() - 1).location();
 
 		ArrayList<JsonObject> results = new ArrayList<>();
@@ -195,30 +109,30 @@ public class JDI2JSON {
 		JsonValue returnValue = null;
 
 		JsonObjectBuilder result = Json.createObjectBuilder();
-		result.add("stdout", stdout.getContents());
+		result.add("stdout", ""); // irrelevant
 		result.add("event", "step_line");
 		result.add("line", loc.lineNumber());
 
 		JsonArrayBuilder frames = Json.createArrayBuilder();
 		StackFrame lastNonUserFrame = null;
 
-			boolean firstFrame = true;
-			for (StackFrame sf : t.frames()) {
-				if (!showFramesInLocation(sf.location())) {
-					lastNonUserFrame = sf;
-					continue;
-				}
-
-				if (lastNonUserFrame != null) {
-					frame_ticker++;
-					frames.add(convertFrameStub(lastNonUserFrame));
-					lastNonUserFrame = null;
-				}
-				frame_ticker++;
-				frames.add(convertFrame(sf, firstFrame, returnValue));
-				firstFrame = false;
-				returnValue = null;
+		boolean firstFrame = true;
+		for (StackFrame sf : t.frames()) {
+			if (!showFramesInLocation(sf.location())) {
+				lastNonUserFrame = sf;
+				continue;
 			}
+
+			if (lastNonUserFrame != null) {
+				frame_ticker++;
+				frames.add(convertFrameStub(lastNonUserFrame));
+				lastNonUserFrame = null;
+			}
+			frame_ticker++;
+			frames.add(convertFrame(sf, firstFrame, returnValue));
+			firstFrame = false;
+			returnValue = null;
+		}
 
 		result.add("stack_to_render", frames);
 
@@ -282,50 +196,6 @@ public class JDI2JSON {
 				!in_builtin_package(rt.name()));
 	}
 
-	public boolean reportEventsAtLocation(Location loc) {
-		if (in_builtin_package(loc.toString()))
-			return false;
-
-		if (loc.toString().contains("$$Lambda$"))
-			return false;
-
-		if (loc.lineNumber() <= 0) {
-			userlog(loc.toString());
-			return true;
-		}
-
-		return true;
-	}
-
-	private JsonObject createReturnEventFrom(Location loc, JsonObject base_ep, JsonValue returned) {
-		try {
-			JsonObjectBuilder result = Json.createObjectBuilder();
-			result.add("event", "return");
-			result.add("line", loc.lineNumber());
-			for (Map.Entry<String, JsonValue> me : base_ep.entrySet()) {
-				if (me.getKey().equals("event") || me.getKey().equals("line")) {
-				} else if (me.getKey().equals("stack_to_render")) {
-					JsonArray old_stack_to_render = (JsonArray) me.getValue();
-					JsonObject old_top_frame = (JsonObject) (old_stack_to_render.get(0));
-					JsonObject old_top_frame_vars = (JsonObject) (old_top_frame.get("encoded_locals"));
-					JsonArray old_top_frame_vars_o = (JsonArray) (old_top_frame.get("ordered_varnames"));
-					result.add("stack_to_render",
-							jsonModifiedArray(old_stack_to_render, 0,
-									jsonModifiedObject
-											(jsonModifiedObject
-															(old_top_frame,
-																	"encoded_locals",
-																	jsonModifiedObject(old_top_frame_vars, "__return__", returned)),
-													"ordered_varnames",
-													jsonModifiedArray(old_top_frame_vars_o, -1, jsonString("__return__")))));
-				} else result.add(me.getKey(), me.getValue());
-			}
-			return result.build();
-		} catch (IndexOutOfBoundsException exc) {
-			return base_ep;
-		}
-	}
-
 	// issue: the frontend uses persistent frame ids but JDI doesn't provide them
 	// approach 1, trying to compute them, seems intractable (esp. w/ callbacks)
 	// approach 2, using an id based on stack depth, does not work w/ frontend
@@ -359,7 +229,7 @@ public class JDI2JSON {
 		}
 
 		// list args first
-        /* KNOWN ISSUE:
+		/* KNOWN ISSUE:
            .arguments() gets the args which have names in LocalVariableTable,
            but if there are none, we get an IllegalArgExc, and can use .getArgumentValues()
            However, sometimes some args have names but not all. Such as within synthetic
@@ -712,7 +582,7 @@ public class JDI2JSON {
 
 	private JsonValue convertValue(Value v) {
 		if (v instanceof BooleanValue) {
-			if (((BooleanValue) v).value() == true)
+			if (((BooleanValue) v).value())
 				return JsonValue.TRUE;
 			else
 				return JsonValue.FALSE;
@@ -737,74 +607,4 @@ public class JDI2JSON {
 			return convertObject(obj, false);
 		}
 	}
-
-	String exceptionMessage(ExceptionEvent event) {
-		ObjectReference exc = event.exception();
-		ReferenceType excType = exc.referenceType();
-		try {
-			// this is the logical approach, but gives "Unexpected JDWP Error: 502" in invokeMethod
-			// even if we suspend-and-resume the thread t
-            /*ThreadReference t = event.thread();
-            Method mm = excType.methodsByName("getMessage").get(0);
-            t.suspend();
-            Value v = exc.invokeMethod(t, mm, new ArrayList<Value>(), 0);
-            t.resume();
-            StringReference sr = (StringReference) v;
-            String detail = sr.value();*/
-
-			// so instead we just look for the longest detailMessage
-			String detail = "";
-			for (Field ff : excType.allFields())
-				if (ff.name().equals("detailMessage")) {
-					StringReference sr = (StringReference) exc.getValue(ff);
-					String thisMsg = sr == null ? null : sr.value();
-					if (thisMsg != null && thisMsg.length() > detail.length())
-						detail = thisMsg;
-				}
-
-			if (detail.equals(""))
-				return excType.name(); // NullPointerException has no detail msg
-
-			return excType.name() + ": " + detail;
-		} catch (Exception e) {
-			System.out.println("Failed to convert exception");
-			System.out.println(e);
-			e.printStackTrace(System.out);
-			for (Field ff : excType.visibleFields())
-				System.out.println(ff);
-			return "fail dynamic message lookup";
-		}
-	}
-
-	private class InputPuller {
-		InputStreamReader vm_link;
-		StringWriter contents = new java.io.StringWriter();
-
-		InputPuller(InputStream ir) {
-			try {
-				vm_link = new InputStreamReader(ir, "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				throw new RuntimeException("Encoding error!");
-			}
-		}
-
-		String getContents() {
-			return contents.toString();
-		}
-
-		void pull() {
-			int BUFFER_SIZE = 2048;
-			char[] cbuf = new char[BUFFER_SIZE];
-			int count;
-			try {
-				while (vm_link.ready()
-						&& ((count = vm_link.read(cbuf, 0, BUFFER_SIZE)) >= 0)) {
-					contents.write(cbuf, 0, count);
-				}
-			} catch (IOException e) {
-				throw new RuntimeException("I/O Error!");
-			}
-		}
-	}
-
 }

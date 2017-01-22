@@ -113,10 +113,7 @@ public class JavaVisualizerAction extends AnAction {
 
 	private void visualizeSuspendContext(SuspendContext sc) {
 		try {
-			JDI2JSON jdi2json = new JDI2JSON(null,
-					System.in,
-					System.in,
-					null);
+			JDI2JSON jdi2json = new JDI2JSON();
 
 			ArrayList<JsonObject> objs = jdi2json.convertExecutionPoint(sc.getThread().getThreadReference());
 			JsonArrayBuilder arr = Json.createArrayBuilder();
