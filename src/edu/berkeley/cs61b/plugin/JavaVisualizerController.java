@@ -9,6 +9,7 @@ import com.intellij.debugger.engine.managerThread.DebuggerCommand;
 import com.intellij.execution.ui.RunnerLayoutUi;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.util.Key;
 import com.intellij.ui.content.Content;
 import com.intellij.xdebugger.XDebugSession;
 import javafx.application.Platform;
@@ -25,8 +26,9 @@ import javax.json.JsonObject;
 import javax.swing.JComponent;
 import java.util.ArrayList;
 
-public class JavaVisualizerWindow {
+public class JavaVisualizerController {
 	private static final String CONTENT_ID = "61B.JavaVisualizerContent";
+	private static final Key<JavaVisualizerController> CONTROLLER_KEY = Key.create("JavaVisualizerController");
 
 	private Project project;
 	private XDebugSession session;
@@ -34,30 +36,9 @@ public class JavaVisualizerWindow {
 	private WebView webView;
 	private boolean webViewReady;
 	private JDI2JSON jdi2json;
+	private Content content;
 
-	static Content findOrAttachVisualizer(XDebugSession session) {
-		if (session != null) {
-			RunnerLayoutUi ui = session.getUI();
-			Content content = ui.findContent(CONTENT_ID);
-			if (content != null) {
-				return content;
-			} else {
-				JavaVisualizerWindow window = new JavaVisualizerWindow(session);
-				content = ui.createContent(
-						CONTENT_ID,
-						window.component,
-						"Java Visualizer",
-						IconLoader.getIcon("/icons/hug.png"),
-						null);
-				ui.addContent(content);
-				return content;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	private JavaVisualizerWindow(XDebugSession session) {
+	private JavaVisualizerController(XDebugSession session) {
 		this.session = session;
 		this.project = session.getProject();
 		this.component = createComponent();
@@ -74,10 +55,39 @@ public class JavaVisualizerWindow {
 		}
 	}
 
+	static JavaVisualizerController findOrAttachVisualizer(XDebugSession session) {
+		if (session != null) {
+			RunnerLayoutUi ui = session.getUI();
+			Content content = ui.findContent(CONTENT_ID);
+			JavaVisualizerController controller;
+
+			if (content != null) {
+				controller = content.getUserData(CONTROLLER_KEY);
+			} else {
+				controller = new JavaVisualizerController(session);
+				controller.content = ui.createContent(
+						CONTENT_ID,
+						controller.component,
+						"Java Visualizer",
+						IconLoader.getIcon("/icons/hug.png"),
+						null);
+				controller.content.putUserData(CONTROLLER_KEY, controller);
+				ui.addContent(controller.content);
+			}
+
+			return controller;
+		} else {
+			return null;
+		}
+	}
+
+	public Content getContent() {
+		return content;
+	}
+
 	private DebugProcess getDebugProcess() {
 		return DebuggerManager.getInstance(project).getDebugProcess(session.getDebugProcess().getProcessHandler());
 	}
-
 
 	private JComponent createComponent() {
 		final JFXPanel jfxPanel = new JFXPanel();
@@ -96,7 +106,8 @@ public class JavaVisualizerWindow {
 		return (this.component = jfxPanel);
 	}
 
-	private void forceRefreshVisualizer() {
+	public void forceRefreshVisualizer() {
+		System.out.println("Force refreshing visualizer...");
 		getDebugProcess().getManagerThread().invokeCommand(new DebuggerCommand() {
 			@Override
 			public void action() {
@@ -118,15 +129,19 @@ public class JavaVisualizerWindow {
 	private void visualizeSuspendContext(SuspendContext sc) {
 		try {
 			ArrayList<JsonObject> objs = jdi2json.convertExecutionPoint(sc.getThread().getThreadReference());
-			JsonArrayBuilder arr = Json.createArrayBuilder();
-			for (JsonObject obj : objs) {
-				arr.add(obj);
+			if (objs.size() == 0) {
+				// nothing to show here.
+				return;
 			}
+
+			JsonArrayBuilder arr = Json.createArrayBuilder();
+			objs.forEach(arr::add);
 			String trace = arr.build().toString();
 
 			Platform.runLater(() -> {
-				if (webView != null) {
-					((JSObject) webView.getEngine().executeScript("window")).call("visualize", trace);
+				if (webView != null && webViewReady) {
+					JSObject window = (JSObject) webView.getEngine().executeScript("window");
+					window.call("visualize", trace);
 				}
 			});
 		} catch (Exception e) {
