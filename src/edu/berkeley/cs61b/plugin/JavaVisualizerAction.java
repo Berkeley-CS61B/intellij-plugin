@@ -33,6 +33,7 @@ public class JavaVisualizerAction extends AnAction {
 
 	private JComponent component = null;
 	private WebView webView = null;
+	private boolean webViewReady = false;
 
 	@Override
 	public void actionPerformed(AnActionEvent e) {
@@ -46,6 +47,9 @@ public class JavaVisualizerAction extends AnAction {
 					visualizeSuspendContext(suspendContext);
 				}
 			});
+			if (webViewReady) {
+				refreshVisualizer(project);
+			}
 		}
 	}
 
@@ -83,6 +87,7 @@ public class JavaVisualizerAction extends AnAction {
 			jfxPanel.setScene(new Scene(webView));
 			webView.getEngine().setOnStatusChanged((WebEvent<String> e) -> {
 				// sshh let's just pretend this is 'onReady'
+				webViewReady = true;
 				refreshVisualizer(project);
 			});
 			webView.getEngine().load(getClass().getResource("/web/visualizer.html").toExternalForm());
