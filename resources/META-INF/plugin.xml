@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>edu.berkeley.cs61b.plugin</id>
-  <name>CS 61B Plugin</name>
-  <version>1.0.3</version>
+  <name>CS 61B</name>
+  <version>1.0.4</version>
   <vendor email="cs61b@berkeley.edu" url="http://datastructur.es">CS 61B Course Staff</vendor>
 
   <description><![CDATA[
@@ -10,7 +10,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
-      Made plugin.
+      Updated icons.
     ]]>
   </change-notes>
 
@@ -24,16 +24,16 @@
   -->
 
   <extensions defaultExtensionNs="com.intellij">
-    <toolWindow id="Style Checker" anchor="bottom" factoryClass="edu.berkeley.cs61b.plugin.CheckStyleToolWindowFactory" icon="/icons/hilf.png"/>
+    <toolWindow id="Style Checker" anchor="bottom" factoryClass="edu.berkeley.cs61b.plugin.CheckStyleToolWindowFactory" icon="/icons/checkstyle.png"/>
   </extensions>
 
   <actions>
     <action id="61B.CheckStyle" class="edu.berkeley.cs61b.plugin.CheckStyleAction" text="Check Style"
-            description="Run the CS 61B style checker" icon="/icons/hilf.png">
+            description="Run the CS 61B style checker" icon="/icons/checkstyle.png">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="AnalyzeMenu"/>
     </action>
     <action id="61B.JavaVisualizer" class="edu.berkeley.cs61b.plugin.JavaVisualizerAction" text="Java Visualizer"
-            description="Show the Java Visualizer" icon="/icons/hug.png">
+            description="Show the Java Visualizer" icon="/icons/jv.png">
       <!--<add-to-group group-id="DebugMainMenu" anchor="last"/>-->
       <add-to-group group-id="XDebugger.ToolWindow.LeftToolbar" anchor="last"/>
     </action>

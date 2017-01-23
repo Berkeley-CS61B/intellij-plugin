@@ -69,7 +69,7 @@ public class JavaVisualizerController {
 						CONTENT_ID,
 						controller.component,
 						"Java Visualizer",
-						IconLoader.getIcon("/icons/hug.png"),
+						IconLoader.getIcon("/icons/jv.png"),
 						null);
 				controller.content.putUserData(CONTROLLER_KEY, controller);
 				ui.addContent(controller.content);
