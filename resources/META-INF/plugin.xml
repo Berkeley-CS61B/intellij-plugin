@@ -6,6 +6,7 @@
 
   <description><![CDATA[
       Plugin for CS 61B (Spring 2017) at UC Berkeley.
+      Includes a style checker (Checkstyle 7.4) and a built-in stack/heap visualizer (via Java Tutor).
     ]]></description>
 
   <change-notes><![CDATA[
