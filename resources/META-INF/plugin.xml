@@ -2,10 +2,10 @@
   <id>edu.berkeley.cs61b.plugin</id>
   <name>CS 61B Plugin</name>
   <version>1.0.3</version>
-  <vendor email="cs61b@berkeley.edu" url="http://datastructur.es">CS 61B</vendor>
+  <vendor email="cs61b@berkeley.edu" url="http://datastructur.es">CS 61B Course Staff</vendor>
 
   <description><![CDATA[
-      Plugin for Berkeley's CS 61B.
+      Plugin for CS 61B (Spring 2017) at UC Berkeley.
     ]]></description>
 
   <change-notes><![CDATA[
