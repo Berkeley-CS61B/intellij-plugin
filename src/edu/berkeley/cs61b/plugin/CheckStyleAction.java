@@ -49,6 +49,7 @@ public class CheckStyleAction extends AnAction {
 				// iteratively add all files to a list
 				List<File> checkerFiles = new ArrayList<>();
 				collectFiles(inputFiles, checkerFiles);
+				checkerFiles.removeIf(p -> !p.getName().endsWith(".java"));
 
 				consoleView.clear();
 				String message = String.format("Running style checker on %d file(s)...\n", checkerFiles.size());

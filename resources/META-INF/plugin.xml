@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>edu.berkeley.cs61b.plugin</id>
   <name>CS 61B</name>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
   <vendor email="cs61b@berkeley.edu" url="http://datastructur.es">CS 61B Course Staff</vendor>
 
   <description><![CDATA[
@@ -10,6 +10,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
+      Updated the style checker ignore non-Java files.
       Updated icons.
     ]]>
   </change-notes>
