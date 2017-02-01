@@ -38,11 +38,14 @@
 
         <property name="basedir" value="${basedir}"/>
     -->
+    <!-- removed b/c IntelliJ virtual file system -->
     <!--<property name="basedir" value="${user.dir}"/>-->
 
     <!-- Checks whether files end with a new line.                        -->
     <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
-    <module name="NewlineAtEndOfFile"/>
+    <module name="NewlineAtEndOfFile">
+      <property name="lineSeparator" value="lf_cr_crlf"/>
+    </module>
 
     <!-- Checks that property files contain the same keys.         -->
     <!-- See http://checkstyle.sf.net/config_misc.html#Translation -->
@@ -56,6 +59,7 @@
 
     <!-- Checks for whitespace                               -->
     <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+    <!-- note from Eli: I hate this rule. Tabs >> Spaces -->
     <module name="FileTabCharacter"/>
 
     <module name="TreeWalker">
@@ -192,6 +196,9 @@
           <property name="protectedAllowed" value="true"/>
           <property name="packageAllowed" value="true"/>
         </module>
+
+        <!-- this is to prevent the style checker from throwing an absurd amount of errors if you have tabs-->
+        <property name="tabWidth" value="4"/>
 
         <!-- indentation checks                           -->
         <module name="Indentation">

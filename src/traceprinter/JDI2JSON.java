@@ -52,12 +52,7 @@ import java.util.TreeSet;
 
 public class JDI2JSON {
 	public static boolean showVoid = true;
-	public static String[] builtin_packages = {"java", "javax", "sun", "com.sun", "traceprinter", "com.intellij", "org.junit"};
-	public static String[] PU_stdlib = {"BinaryIn", "BinaryOut", "BinaryStdIn", "BinaryStdOut",
-			"Copy", "Draw", "DrawListener", "In", "InTest",
-			"Out", "Picture", "StdArrayIO", "StdAudio",
-			"StdDraw", "StdDraw3D", "StdIn", "StdInTest",
-			"StdOut", "StdRandom", "StdStats", "Stopwatch", "Stack", "Queue", "ST", "Point", "ST"};
+	public static String[] builtin_packages = {"java", "javax", "sun", "com.sun", "traceprinter", "com.intellij", "org.junit", "jh61b.junit", "jh61b"};
 	public List<ReferenceType> staticListable = new ArrayList<>();
 	public ReferenceType stdinRT = null;
 	boolean showStringsAsValues = true;
@@ -176,12 +171,6 @@ public class JDI2JSON {
 		for (String badPrefix : builtin_packages)
 			if (S.startsWith(badPrefix + "."))
 				return true;
-		for (String badClass : PU_stdlib) {
-			if (S.equals(badClass))
-				return true;
-			if (S.startsWith(badClass + "$"))
-				return true;
-		}
 		return false;
 	}
 
