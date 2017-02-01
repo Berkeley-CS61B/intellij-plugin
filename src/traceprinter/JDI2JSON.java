@@ -52,7 +52,7 @@ import java.util.TreeSet;
 
 public class JDI2JSON {
 	public static boolean showVoid = true;
-	public static String[] builtin_packages = {"java", "javax", "sun", "com.sun", "traceprinter"};
+	public static String[] builtin_packages = {"java", "javax", "sun", "com.sun", "traceprinter", "com.intellij", "org.junit"};
 	public static String[] PU_stdlib = {"BinaryIn", "BinaryOut", "BinaryStdIn", "BinaryStdOut",
 			"Copy", "Draw", "DrawListener", "In", "InTest",
 			"Out", "Picture", "StdArrayIO", "StdAudio",
