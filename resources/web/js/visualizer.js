@@ -15,6 +15,7 @@ $(document).ready(function () {
 			stdin: "",
 			trace: trace
 		};
+		$('#root').empty();
 		var v = new ExecutionVisualizer('root', container, opts);
 	};
 	window.status = "Ready";

@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>edu.berkeley.cs61b.plugin</id>
   <name>CS 61B</name>
-  <version>1.0.9</version>
+  <version>1.0.11</version>
   <vendor email="cs61b@berkeley.edu" url="http://datastructur.es">CS 61B Course Staff</vendor>
 
   <description><![CDATA[
@@ -10,9 +10,8 @@
     ]]></description>
 
   <change-notes><![CDATA[
-      Remove magic number style check.
-      No longer throws a style error for LF line endings on Windows.
-      No longer throws an error for every line with tabs -- only once.
+      Better error messages for style check naming problems.
+      Slim down plugin, fix visualizer render bugs.
     ]]>
   </change-notes>
 

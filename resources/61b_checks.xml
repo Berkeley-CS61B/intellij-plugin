@@ -68,30 +68,54 @@
         <module name="ConstantName"/>
         <module name="LocalFinalVariableName">
           <property name="format" value="^([A-Z][0-9]*|[a-z][a-zA-Z0-9]*)$"/>
+          <message key="name.invalidPattern"
+                   value="Local final variable ''{0}'' must start with a lower-case letter, or consist of a single, upper-case letter." />
         </module>
         <module name="LocalVariableName">
           <property name="format" value="^([A-Z][0-9]*|[a-z][a-zA-Z0-9]*)$"/>
+          <message key="name.invalidPattern"
+                  value="Local variable ''{0}'' must start with a lower-case letter, or consist of a single, upper-case letter." />
         </module>
         <module name="MemberName">
           <property name="format" value="^_?[a-z][a-zA-Z0-9]*$|_?[A-Z]$"/>
+          <message key="name.invalidPattern"
+                  value="Instance variable ''{0}'' must start with either a lower-case letter or '_'."/>
         </module>
-        <module name="MethodName"/>
+        <module name="MethodName">
+          <property name="format" value="^([A-Z][0-9]*|[a-z][a-zA-Z0-9]*)$"/>
+          <message key="name.invalidPattern"
+                   value="Method name ''{0}'' must start with a lower-case letter, or consist of a single, upper-case letter." />
+        </module>
         <module name="PackageName">
           <property name="format" 
-                    value="^[a-z][a-z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*$"/>
+                    value="^[a-z][a-z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*$" />
+          <message key="name.invalidPattern"
+                   value="Package name ''{0}'' must start with a lower-case letter."/>
         </module>
         <module name="ParameterName">
           <property name="format" value="^([A-Z][0-9]*|[a-z][a-zA-Z0-9]*)$"/>
+          <message key="name.invalidPattern"
+                   value="Parameter ''{0}'' must start with a lower-case letter, or consist of a single, upper-case letter." />
         </module>
         <module name="StaticVariableName">
           <property name="format" value="^_?[a-z][a-zA-Z0-9]*$|_?[A-Z]$"/>
+          <message key="name.invalidPattern"
+                   value="Static variable ''{0}'' must be in all capitals." />
         </module>
-        <module name="TypeName"/>
+        <module name="TypeName">
+          <property name="format" value="^[A-Z][A-Za-z0-9]*$"/>
+          <message key="name.invalidPattern"
+                   value="Type (class) name ''{0}'' must start with a capital letter."/>
+        </module>
         <module name="ClassTypeParameterName">
           <property name="format" value="^[A-Z][A-Za-z0-9]*$"/>
+          <message key="name.invalidPattern"
+                   value="Type parameter ''{0}'' must start with a capital letter."/>
         </module>
         <module name="MethodTypeParameterName">
           <property name="format" value="^[A-Z][A-Za-z0-9]*$"/>
+          <message key="name.invalidPattern"
+                   value="Type parameter ''{0}'' must start with a capital letter."/>
         </module>
 
         <!-- Checks for imports                              -->
