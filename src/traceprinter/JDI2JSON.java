@@ -24,6 +24,7 @@ import com.sun.jdi.Field;
 import com.sun.jdi.FloatValue;
 import com.sun.jdi.IncompatibleThreadStateException;
 import com.sun.jdi.IntegerValue;
+import com.sun.jdi.InterfaceType;
 import com.sun.jdi.InvalidStackFrameException;
 import com.sun.jdi.LocalVariable;
 import com.sun.jdi.Location;
@@ -45,8 +46,13 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -67,6 +73,8 @@ public class JDI2JSON {
 	/*    private ArrayList<Long> frame_stack = new ArrayList<Long>();*/
 	private long frame_ticker = 0;
 	private JsonArray convertVoid = jsonArray("VOID");
+
+	private ThreadReference thread;
 
 	static JsonValue jsonInt(long l) {
 		return Json.createArrayBuilder().add(l).build().getJsonNumber(0);
@@ -93,6 +101,7 @@ public class JDI2JSON {
 	// returns null when nothing changed since the last time
 	// (or when only event type changed and new value is "step_line")
 	public ArrayList<JsonObject> convertExecutionPoint(ThreadReference t) throws IncompatibleThreadStateException {
+		this.thread = t;
 		Location loc = t.frame(t.frameCount() - 1).location();
 
 		ArrayList<JsonObject> results = new ArrayList<>();
@@ -219,7 +228,7 @@ public class JDI2JSON {
 
 		// list args first
 		/* KNOWN ISSUE:
-           .arguments() gets the args which have names in LocalVariableTable,
+		   .arguments() gets the args which have names in LocalVariableTable,
            but if there are none, we get an IllegalArgExc, and can use .getArgumentValues()
            However, sometimes some args have names but not all. Such as within synthetic
            lambda methods like "lambda$inc$0". For an unknown reason, trying .arguments()
@@ -413,78 +422,52 @@ public class JDI2JSON {
 					.build();
 		}
 		// do we need special cases for ClassObjectReference, ThreadReference,.... ?
-		// stack and queue handling code by Will Gwozdz
+		// list / set / map handling by Eli Lipsitz
 		else {
-			if (obj.referenceType().name().equals("Queue")) {
+			if (doesImplementInterface(obj, "java.util.List")) {
 				heap_done.add(obj.uniqueID());
-				ReferenceType rt = obj.referenceType();
-				Field length = rt.fieldByName("N");
-				int queueLength = ((IntegerValue) obj.getValue(length)).value();
-				result.add("QUEUE");
-				if (queueLength > 0) {
-					Field first = rt.fieldByName("first");
-					ObjectReference thisNode = (ObjectReference) obj.getValue(first);
-					ReferenceType nodeRT = thisNode.referenceType();
-					Field val = nodeRT.fieldByName("item");
-					Field next = nodeRT.fieldByName("next");
-					for (int i = 0; i < queueLength; i++) {
-						Value v = thisNode.getValue(val);
-						result.add(convertValue(v));
-						thisNode = (ObjectReference) thisNode.getValue(next);
-					}
+				result.add("LIST");
+				Iterator<Value> i = JDIUtils.getIterator(thread, obj);
+				while (i.hasNext()) {
+					Value v = i.next();
+					result.add(convertValue(v));
 				}
 				return result.build();
 			}
 
-			if (obj.referenceType().name().equals("Stack")) {
+			if (doesImplementInterface(obj, "java.util.Set")) {
 				heap_done.add(obj.uniqueID());
-				ReferenceType rt = obj.referenceType();
-				Field length = rt.fieldByName("N");
-				int queueLength = ((IntegerValue) obj.getValue(length)).value();
-				result.add("STACK");
-				if (queueLength > 0) {
-					Field first = rt.fieldByName("first");
-					ObjectReference thisNode = (ObjectReference) obj.getValue(first);
-					ReferenceType nodeRT = thisNode.referenceType();
-					Field val = nodeRT.fieldByName("item");
-					Field next = nodeRT.fieldByName("next");
-					for (int i = 0; i < queueLength; i++) {
-						Value v = thisNode.getValue(val);
-						result.add(convertValue(v));
-						thisNode = (ObjectReference) thisNode.getValue(next);
-					}
+				result.add("SET");
+				Iterator<Value> i = JDIUtils.getIterator(thread, obj);
+				while (i.hasNext()) {
+					Value v = i.next();
+					result.add(convertValue(v));
 				}
 				return result.build();
 			}
 
-			// st handling code by Will Gwozdz
-			if (obj.referenceType().name().equals("ST")) {
+			if (doesImplementInterface(obj, "java.util.Map")) {
 				heap_done.add(obj.uniqueID());
-				ReferenceType rt = obj.referenceType();
 				result.add("DICT");
-				Field first = rt.fieldByName("first");
-				ObjectReference firstNode = (ObjectReference) obj.getValue(first);
-
-				class stHandler {
-					public void loadResultFromSymbolTree(ObjectReference n, JsonArrayBuilder result) {
-						if (n == null)
-							return;
-						ReferenceType nt = n.referenceType();
-						Field left = nt.fieldByName("left");
-						Field right = nt.fieldByName("right");
-						Field key = nt.fieldByName("key");
-						Field value = nt.fieldByName("value");
-						//System.out.println(n.uniqueID());
-						loadResultFromSymbolTree((ObjectReference) n.getValue(left), result);
-						if (n.getValue(value) != null) {
-							result.add(Json.createArrayBuilder().add(convertValue(n.getValue(key)))
-									.add(convertValue(n.getValue(value))).build());
-						}
-						loadResultFromSymbolTree((ObjectReference) n.getValue(right), result);
-					}
+				ObjectReference entrySet = (ObjectReference) JDIUtils.invokeSimple(thread, obj, "entrySet");
+				Iterator<Value> i = JDIUtils.getIterator(thread, entrySet);
+				while (i.hasNext()) {
+					ObjectReference entry = (ObjectReference) i.next();
+					Value key = JDIUtils.invokeSimple(thread, entry, "getKey");
+					Value val = JDIUtils.invokeSimple(thread, entry, "getValue");
+					result.add(Json.createArrayBuilder().add(convertValue(key)).add(convertValue(val)).build());
 				}
+				return result.build();
+			}
 
-				new stHandler().loadResultFromSymbolTree(firstNode, result); //recursively add key, value pairs to the result
+			if (doesImplementInterface(obj, "java.util.Queue")) {
+				heap_done.add(obj.uniqueID());
+				result.add("QUEUE");
+				Iterator<Value> i = JDIUtils.getIterator(thread, obj);
+				while (i.hasNext()) {
+					Value v = i.next();
+					result.add(convertValue(v));
+				}
 				return result.build();
 			}
 
@@ -555,6 +538,21 @@ public class JDI2JSON {
 			}
 			return result.build();
 		}
+	}
+
+	private static boolean doesImplementInterface(ObjectReference obj, String iface) {
+		if (obj.referenceType() instanceof ClassType) {
+			Queue<InterfaceType> queue = new LinkedList<>();
+			queue.addAll(((ClassType) obj.referenceType()).interfaces());
+			while (!queue.isEmpty()) {
+				InterfaceType t = queue.poll();
+				if (t.name().equals(iface)) {
+					return true;
+				}
+				queue.addAll(t.superinterfaces());
+			}
+		}
+		return false;
 	}
 
 	private JsonArray jsonArray(Object... args) {

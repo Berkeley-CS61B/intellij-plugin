@@ -4745,7 +4745,7 @@ ExecutionVisualizer.prototype.activateJavaFrontend = function() {
         return [false]; // didn't handle
 
       var label = obj[0].toLowerCase();
-      var visibleLabel = {list:'array', queue:'queue', stack:'stack'}[label];
+      var visibleLabel = {list:'array / list', queue:'queue', stack:'stack'}[label];
       
       if (obj.length == 1) {
         d3DomElement.append('<div class="typeLabel">' + typeLabelPrefix + 'empty ' + visibleLabel + '</div>');
@@ -4822,9 +4822,9 @@ ExecutionVisualizer.prototype.activateJavaFrontend = function() {
       myViz.domRoot.find(".typeLabel:contains('dict')").each(
         function(i) {
           if ($(this).html()=='dict')
-            $(this).html('symbol table');
+            $(this).html('map');
           if ($(this).html()=='empty dict')
-            $(this).html('empty symbol table');
+            $(this).html('empty map');
         });
     });
 

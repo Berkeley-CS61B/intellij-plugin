@@ -219,6 +219,8 @@
         <module name="VisibilityModifier">
           <property name="protectedAllowed" value="true"/>
           <property name="packageAllowed" value="true"/>
+          <message key="variable.notPrivate"
+                   value="Variable ''{0}'' may not be public."/>
         </module>
 
         <!-- this is to prevent the style checker from throwing an absurd amount of errors if you have tabs-->
