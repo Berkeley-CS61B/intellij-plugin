@@ -58,6 +58,7 @@ import java.util.TreeSet;
 
 public class JDI2JSON {
 	public static boolean showVoid = true;
+	public static boolean showRealType = true;
 	public static String[] builtin_packages = {"java", "javax", "sun", "com.sun", "traceprinter", "com.intellij", "org.junit", "jh61b.junit", "jh61b"};
 	public List<ReferenceType> staticListable = new ArrayList<>();
 	public ReferenceType stdinRT = null;
@@ -386,6 +387,9 @@ public class JDI2JSON {
 			ArrayReference ao = (ArrayReference) obj;
 			int L = ao.length();
 			result.add("LIST");
+			if (showRealType) {
+				result.add(ao.type().name());
+			}
 			heap_done.add(obj.uniqueID());
 
 			class Help {
@@ -424,9 +428,13 @@ public class JDI2JSON {
 		// do we need special cases for ClassObjectReference, ThreadReference,.... ?
 		// list / set / map handling by Eli Lipsitz
 		else {
-			if (doesImplementInterface(obj, "java.util.List")) {
+			String typeName = obj.referenceType().name();
+			if (doesImplementInterface(obj, "java.util.List") && in_builtin_package(typeName)) {
 				heap_done.add(obj.uniqueID());
 				result.add("LIST");
+				if (showRealType) {
+					result.add(displayNameForType(obj));
+				}
 				Iterator<Value> i = JDIUtils.getIterator(thread, obj);
 				while (i.hasNext()) {
 					Value v = i.next();
@@ -435,9 +443,12 @@ public class JDI2JSON {
 				return result.build();
 			}
 
-			if (doesImplementInterface(obj, "java.util.Set")) {
+			if (doesImplementInterface(obj, "java.util.Set") && in_builtin_package(typeName)) {
 				heap_done.add(obj.uniqueID());
 				result.add("SET");
+				if (showRealType) {
+					result.add(displayNameForType(obj));
+				}
 				Iterator<Value> i = JDIUtils.getIterator(thread, obj);
 				while (i.hasNext()) {
 					Value v = i.next();
@@ -446,9 +457,12 @@ public class JDI2JSON {
 				return result.build();
 			}
 
-			if (doesImplementInterface(obj, "java.util.Map")) {
+			if (doesImplementInterface(obj, "java.util.Map") && in_builtin_package(typeName)) {
 				heap_done.add(obj.uniqueID());
 				result.add("DICT");
+				if (showRealType) {
+					result.add(displayNameForType(obj));
+				}
 				ObjectReference entrySet = (ObjectReference) JDIUtils.invokeSimple(thread, obj, "entrySet");
 				Iterator<Value> i = JDIUtils.getIterator(thread, entrySet);
 				while (i.hasNext()) {
@@ -460,9 +474,12 @@ public class JDI2JSON {
 				return result.build();
 			}
 
-			if (doesImplementInterface(obj, "java.util.Queue")) {
+			if (doesImplementInterface(obj, "java.util.Queue") && in_builtin_package(typeName)) {
 				heap_done.add(obj.uniqueID());
 				result.add("QUEUE");
+				if (showRealType) {
+					result.add(displayNameForType(obj));
+				}
 				Iterator<Value> i = JDIUtils.getIterator(thread, obj);
 				while (i.hasNext()) {
 					Value v = i.next();
@@ -480,30 +497,7 @@ public class JDI2JSON {
 				result.add(jsonArray("___NO_LABEL!___",//jsonArray("NO-LABEL"), // don't show a label or label cell for wrapper instance field
 						convertValue(obj.getValue(obj.referenceType().fieldByName("value")))));
 			} else {
-				String fullName = obj.referenceType().name();
-				if (fullName.indexOf("$") > 0) {
-					// inner, local, anonymous or lambda class
-					if (fullName.contains("$$Lambda")) {
-						fullName = "&lambda;" + fullName.substring(fullName.indexOf("$$Lambda") + 9); // skip $$lambda$
-						try {
-							String interf = ((ClassType) obj.referenceType()).interfaces().get(0).name();
-							if (interf.startsWith("java.util.function."))
-								interf = interf.substring(19);
-
-							fullName += " [" + interf + "]";
-						} catch (Exception e) {
-						}
-					}
-					// more cases here?
-					else {
-						fullName = fullName.substring(1 + fullName.indexOf('$'));
-						if (fullName.matches("[0-9]+"))
-							fullName = "anonymous class " + fullName;
-						else if (fullName.substring(0, 1).matches("[0-9]+"))
-							fullName = "local class " + fullName.substring(1);
-					}
-				}
-				result.add(fullName);
+				result.add(displayNameForType(obj));
 			}
 			if (showGuts(obj.referenceType())) {
 				// fields: -inherited -hidden +synthetic
@@ -538,6 +532,33 @@ public class JDI2JSON {
 			}
 			return result.build();
 		}
+	}
+
+	private static String displayNameForType(ObjectReference obj) {
+		String fullName = obj.referenceType().name();
+		if (fullName.indexOf("$") > 0) {
+			// inner, local, anonymous or lambda class
+			if (fullName.contains("$$Lambda")) {
+				fullName = "&lambda;" + fullName.substring(fullName.indexOf("$$Lambda") + 9); // skip $$lambda$
+				try {
+					String interf = ((ClassType) obj.referenceType()).interfaces().get(0).name();
+					if (interf.startsWith("java.util.function."))
+						interf = interf.substring(19);
+
+					fullName += " [" + interf + "]";
+				} catch (Exception e) {
+				}
+			}
+			// more cases here?
+			else {
+				fullName = fullName.substring(1 + fullName.indexOf('$'));
+				if (fullName.matches("[0-9]+"))
+					fullName = "anonymous class " + fullName;
+				else if (fullName.substring(0, 1).matches("[0-9]+"))
+					fullName = "local class " + fullName.substring(1);
+			}
+		}
+		return fullName;
 	}
 
 	private static boolean doesImplementInterface(ObjectReference obj, String iface) {

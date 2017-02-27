@@ -3645,13 +3645,14 @@ function(objID, stepNum, d3DomElement, isTopLevel) {
 
   if (obj[0] == 'LIST' || obj[0] == 'TUPLE' || obj[0] == 'SET' || obj[0] == 'DICT') {
     var label = obj[0].toLowerCase();
+    var typeName = obj[1];
 
-    assert(obj.length >= 1);
-    if (obj.length == 1) {
-      d3DomElement.append('<div class="typeLabel">' + typeLabelPrefix + ' empty ' + myViz.getRealLabel(label) + '</div>');
+    assert(obj.length >= 2);
+    if (obj.length == 2) {
+      d3DomElement.append('<div class="typeLabel">' + typeLabelPrefix + ' empty ' + typeName + '</div>');
     }
     else {
-      d3DomElement.append('<div class="typeLabel">' + typeLabelPrefix + myViz.getRealLabel(label) + '</div>');
+      d3DomElement.append('<div class="typeLabel">' + typeLabelPrefix + typeName + '</div>');
       d3DomElement.append('<table class="' + label + 'Tbl"></table>');
       var tbl = d3DomElement.children('table');
 
@@ -3660,7 +3661,7 @@ function(objID, stepNum, d3DomElement, isTopLevel) {
         var headerTr = tbl.find('tr:first');
         var contentTr = tbl.find('tr:last');
         $.each(obj, function(ind, val) {
-          if (ind < 1) return; // skip type tag and ID entry
+          if (ind < 2) return; // skip type tag and ID entry
 
           // add a new column and then pass in that newly-added column
           // as d3DomElement to the recursive call to child:
@@ -3673,7 +3674,7 @@ function(objID, stepNum, d3DomElement, isTopLevel) {
       }
       else if (obj[0] == 'SET') {
         // create an R x C matrix:
-        var numElts = obj.length - 1;
+        var numElts = obj.length - 2;
 
         // gives roughly a 3x5 rectangular ratio, square is too, err,
         // 'square' and boring
@@ -3689,9 +3690,9 @@ function(objID, stepNum, d3DomElement, isTopLevel) {
         }
 
         jQuery.each(obj, function(ind, val) {
-          if (ind < 1) return; // skip 'SET' tag
+          if (ind < 2) return; // skip 'SET' tag
 
-          if (((ind - 1) % numCols) == 0) {
+          if (((ind - 2) % numCols) == 0) {
             tbl.append('<tr></tr>');
           }
 
@@ -3702,7 +3703,7 @@ function(objID, stepNum, d3DomElement, isTopLevel) {
       }
       else if (obj[0] == 'DICT') {
         $.each(obj, function(ind, kvPair) {
-          if (ind < 1) return; // skip 'DICT' tag
+          if (ind < 2) return; // skip 'DICT' tag
 
           tbl.append('<tr class="dictEntry"><td class="dictKey"></td><td class="dictVal"></td></tr>');
           var newRow = tbl.find('tr:last');
@@ -4745,9 +4746,9 @@ ExecutionVisualizer.prototype.activateJavaFrontend = function() {
         return [false]; // didn't handle
 
       var label = obj[0].toLowerCase();
-      var visibleLabel = {list:'array / list', queue:'queue', stack:'stack'}[label];
+      var visibleLabel = obj[1];
       
-      if (obj.length == 1) {
+      if (obj.length == 2) {
         d3DomElement.append('<div class="typeLabel">' + typeLabelPrefix + 'empty ' + visibleLabel + '</div>');
         return [true]; //handled
       }
@@ -4762,7 +4763,7 @@ ExecutionVisualizer.prototype.activateJavaFrontend = function() {
         var contentTr = tbl.find('tr:last');
         
         // i: actual index in json object; ind: apparent index
-        for (var i=1, ind=0; i<obj.length; i++) {
+        for (var i=2, ind=0; i<obj.length; i++) {
           var val = obj[i];
           var elide = val instanceof Array && val[0] == 'ELIDE';
           
@@ -4791,7 +4792,7 @@ ExecutionVisualizer.prototype.activateJavaFrontend = function() {
         var contentTr = tbl.find('tr:last');
         contentTr.append('<td class="'+ label + 'FElt">'+'<span class="stringObj symbolic">&#8596;</span>'+'</td>');
         $.each(obj, function(ind, val) {
-          if (ind < 1) return; // skip type tag and ID entry
+          if (ind < 2) return; // skip type tag and ID entry
           contentTr.append('<td class="'+ label + 'Elt"></td>');
           myViz.renderNestedObject(val, stepNum, contentTr.find('td:last'));
         });
@@ -4804,7 +4805,7 @@ ExecutionVisualizer.prototype.activateJavaFrontend = function() {
         // Add arrows showing in/out direction
         contentTr.append('<td class="'+ label + 'FElt">'+'<span class="stringObj symbolic">&#8592;</span></td>');    
         $.each(obj, function(ind, val) {
-          if (ind < 1) return; // skip type tag and ID entry
+          if (ind < 2) return; // skip type tag and ID entry
           contentTr.append('<td class="'+ label + 'Elt"></td>');
           myViz.renderNestedObject(val, stepNum, contentTr.find('td:last'));
         });
@@ -4819,13 +4820,13 @@ ExecutionVisualizer.prototype.activateJavaFrontend = function() {
     function(args) {
       var myViz = args.myViz;
       myViz.domRoot.find("td.instKey:contains('___NO_LABEL!___')").hide();
-      myViz.domRoot.find(".typeLabel:contains('dict')").each(
+      /*myViz.domRoot.find(".typeLabel:contains('dict')").each(
         function(i) {
           if ($(this).html()=='dict')
             $(this).html('map');
           if ($(this).html()=='empty dict')
             $(this).html('empty map');
-        });
+        });*/
     });
 
   // java synthetics cause things which javascript doesn't like in an id
