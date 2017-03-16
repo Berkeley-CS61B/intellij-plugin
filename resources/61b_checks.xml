@@ -50,7 +50,7 @@
     <!-- Checks that property files contain the same keys.         -->
     <!-- See http://checkstyle.sf.net/config_misc.html#Translation -->
     <module name="Translation"/>
-    
+
     <!-- Checks for Size Violations.                    -->
     <!-- See http://checkstyle.sf.net/config_sizes.html -->
     <module name="FileLength">
@@ -65,7 +65,11 @@
     <module name="TreeWalker">
         <!-- Checks for Naming Conventions.                  -->
         <!-- See http://checkstyle.sf.net/config_naming.html -->
-        <module name="ConstantName"/>
+        <module name="ConstantName">
+          <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+          <message key="name.invalidPattern"
+                  value="Constant ''{0}'' must be in all capitals." />
+        </module>
         <module name="LocalFinalVariableName">
           <property name="format" value="^([A-Z][0-9]*|[a-z][a-zA-Z0-9]*)$"/>
           <message key="name.invalidPattern"
@@ -87,7 +91,7 @@
                    value="Method name ''{0}'' must start with a lower-case letter, or consist of a single, upper-case letter." />
         </module>
         <module name="PackageName">
-          <property name="format" 
+          <property name="format"
                     value="^[a-z][a-z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*$" />
           <message key="name.invalidPattern"
                    value="Package name ''{0}'' must start with a lower-case letter."/>
