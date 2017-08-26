@@ -31,6 +31,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class CheckStyleAction extends AnAction {
+	private static final String checkstyleChecksXML = "cs61b_fa17_checks.xml";
+	private static final String checkstyleSuppressXML = "cs61b_fa17_suppressions.xml";
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
@@ -76,8 +78,9 @@ public class CheckStyleAction extends AnAction {
 	private void runCheckStyle(Project project, ConsoleView consoleView, List<File> files) {
 		Configuration config;
 		try {
+			System.setProperty("checkstyle.suppress.file", getClass().getClassLoader().getResource(checkstyleSuppressXML).toString());
 			PropertiesExpander properties = new PropertiesExpander(System.getProperties());
-			InputSource configSource = new InputSource(getClass().getClassLoader().getResourceAsStream("61b_checks.xml"));
+			InputSource configSource = new InputSource(getClass().getClassLoader().getResourceAsStream(checkstyleChecksXML));
 
 			config = ConfigurationLoader.loadConfiguration(configSource, properties, true);
 		} catch (Exception e) {
