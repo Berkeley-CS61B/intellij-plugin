@@ -35,6 +35,26 @@ public class CheckStyleAction extends AnAction {
 	private static final String checkstyleSuppressXML = "cs61b_fa17_suppressions.xml";
 
 	@Override
+	public void update(AnActionEvent event) {
+		super.update(event);
+
+		// only show if selecting a directory or .java file (or multiple)
+		Project project = event.getData(PlatformDataKeys.PROJECT);
+		VirtualFile[] files = event.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
+
+		boolean showAction = false;
+		if (project != null && files != null) {
+			for (VirtualFile file : files) {
+				if (file.isDirectory() || "java".equals(file.getExtension())) {
+					showAction = true;
+					break;
+				}
+			}
+		}
+		event.getPresentation().setVisible(showAction);
+	}
+
+	@Override
 	public void actionPerformed(AnActionEvent event) {
 		Project project = event.getData(PlatformDataKeys.PROJECT);
 		VirtualFile[] inputFiles = event.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
