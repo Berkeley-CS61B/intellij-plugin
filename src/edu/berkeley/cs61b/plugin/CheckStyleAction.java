@@ -74,7 +74,7 @@ public class CheckStyleAction extends AnAction {
 				checkerFiles.removeIf(p -> !p.getName().endsWith(".java"));
 
 				consoleView.clear();
-				String message = String.format("Running style checker on %d file(s)...\n", checkerFiles.size());
+				String message = String.format("Running style checker on %d file(s) ...\n", checkerFiles.size());
 				consoleView.print(message, ConsoleViewContentType.SYSTEM_OUTPUT);
 				runCheckStyle(project, consoleView, checkerFiles);
 			});
@@ -121,6 +121,9 @@ public class CheckStyleAction extends AnAction {
 			consoleView.print("Style checker completed with " + numErrs + " errors" + "\n", ConsoleViewContentType.SYSTEM_OUTPUT);
 		} catch (Exception e) {
 			consoleView.print("Unable to start style checker (2): " + e.getMessage() + "\n", ConsoleViewContentType.ERROR_OUTPUT);
+			e.printStackTrace();
+		} catch (Error e) {
+			consoleView.print("Error running style checking: " + e.getMessage() + "\n", ConsoleViewContentType.ERROR_OUTPUT);
 			e.printStackTrace();
 		}
 	}
