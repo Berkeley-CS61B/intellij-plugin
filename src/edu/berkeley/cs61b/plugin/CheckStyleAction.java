@@ -159,9 +159,16 @@ public class CheckStyleAction extends AnAction {
 			if (f != null) {
 				Path file_path = Paths.get(f.getPath());
 				Path base_path = Paths.get(project.getBasePath());
-				String relative = base_path.relativize(file_path).toString();
+				String display_path;
 
-				String linkText = relative + ":" + e.getLine();
+				try {
+					display_path = base_path.relativize(file_path).toString();
+				} catch (IllegalArgumentException e1) {
+					// 'cannot be made relative'
+					display_path = file_path.toString();
+				}
+
+				String linkText = display_path + ":" + e.getLine();
 				if (e.getColumn() != 0) {
 					linkText += ":" + e.getColumn();
 				}
