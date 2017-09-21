@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>edu.berkeley.cs61b.plugin</id>
   <name>CS 61B</name>
-  <version>1.0.15</version>
+  <version>1.0.16</version>
   <vendor email="cs61b@berkeley.edu" url="http://datastructur.es">CS 61B Course Staff</vendor>
 
   <description><![CDATA[
@@ -10,8 +10,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
-      Update for Fall 2017.
-      Fix bug where having multiple drives can cause style checking error.
+      Add more student-readable error messages to style checker.
     ]]>
   </change-notes>
 

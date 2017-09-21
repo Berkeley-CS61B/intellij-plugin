@@ -46,7 +46,9 @@
 
   <!-- Checks whether files end with a new line.                        -->
   <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
-  <module name="NewlineAtEndOfFile"/>
+  <module name="NewlineAtEndOfFile">
+    <property name="lineSeparator" value="lf_cr_crlf"/>
+  </module>
 
   <!-- Checks that property files contain the same keys.         -->
   <!-- See http://checkstyle.sf.net/config_misc.html#Translation -->
@@ -95,33 +97,58 @@
 
     <!-- Checks for Naming Conventions.                  -->
     <!-- See http://checkstyle.sf.net/config_naming.html -->
-    <module name="ConstantName"/>
+    <module name="ConstantName">
+      <message key="name.invalidPattern"
+               value="Constant ''{0}'' must be in all capitals." />
+    </module>
     <module name="LocalFinalVariableName">
       <property name="format" value="^([A-Z][0-9]*|[a-z][a-zA-Z0-9]*)$"/>
+      <message key="name.invalidPattern"
+               value="Local final variable ''{0}'' must start with a lower-case letter, or consist of a single, upper-case letter." />
     </module>
     <module name="LocalVariableName">
       <property name="format" value="^([A-Z][0-9]*|[a-z][a-zA-Z0-9]*)$"/>
+      <message key="name.invalidPattern"
+               value="Local variable ''{0}'' must start with a lower-case letter, or consist of a single, upper-case letter." />
     </module>
     <module name="MemberName">
       <property name="format" value="^_?[a-z][a-zA-Z0-9]*$|_[A-Z]$"/>
+      <message key="name.invalidPattern"
+               value="Instance variable ''{0}'' must start with either a lower-case letter or '_'."/>
     </module>
-    <module name="MethodName"/>
+    <module name="MethodName">
+      <message key="name.invalidPattern"
+               value="Method name ''{0}'' must start with a lower-case letter, or consist of a single, upper-case letter." />
+    </module>
     <module name="PackageName">
       <property name="format"
                 value="^[a-z][a-z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*$"/>
+      <message key="name.invalidPattern"
+               value="Package name ''{0}'' must start with a lower-case letter."/>
     </module>
     <module name="ParameterName">
       <property name="format" value="^([A-Z][0-9]*|[a-z][a-zA-Z0-9]*)$"/>
+      <message key="name.invalidPattern"
+               value="Parameter ''{0}'' must start with a lower-case letter, or consist of a single, upper-case letter followed by 0 or more digits." />
     </module>
     <module name="StaticVariableName">
       <property name="format" value="^_?[a-z][a-zA-Z0-9]*$|_[A-Z]$"/>
+      <message key="name.invalidPattern"
+               value="Static variable ''{0}'' must start with either a lower-case letter or '_'." />
     </module>
-    <module name="TypeName"/>
+    <module name="TypeName">
+      <message key="name.invalidPattern"
+               value="Type (class) name ''{0}'' must start with a capital letter."/>
+    </module>
     <module name="ClassTypeParameterName">
       <property name="format" value="^[A-Z][A-Za-z0-9]*$"/>
+      <message key="name.invalidPattern"
+               value="Type parameter ''{0}'' must start with a capital letter."/>
     </module>
     <module name="MethodTypeParameterName">
       <property name="format" value="^[A-Z][A-Za-z0-9]*$"/>
+      <message key="name.invalidPattern"
+               value="Type parameter ''{0}'' must start with a capital letter."/>
     </module>
 
 
@@ -252,6 +279,17 @@
     <module name="VisibilityModifier">
       <property name="protectedAllowed" value="true"/>
     </module>
+
+    <!-- It seems that most editors that our students use treat tabs as
+         4 blanks.   Of course, this common choice is completely idiotic.
+         It also has the effect of amplifying the error of including
+         tab characters in the source by causing many indentation errors,
+         unless we treat tabs as 4 blanks. True, as a result,
+         people whose editors correctly treat tabs as 8 characters get
+         many errors if they leave tabs in their files, but let us hope
+         that since they chose proper editors, they are also sensible
+         enough NOT to use tab characters in their source files.-->
+    <property name="tabWidth" value="4"/>
 
     <!-- indentation checks                           -->
     <module name="Indentation">
