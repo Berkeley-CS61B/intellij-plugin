@@ -10,6 +10,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="javax.json-1.0.4" level="project" />
-    <orderEntry type="library" name="ucb-checkstyle" level="project" />
+    <orderEntry type="library" name="checkstyle-7.4-all" level="project" />
   </component>
 </module>
