@@ -59,7 +59,7 @@ import java.util.TreeSet;
 public class JDI2JSON {
 	public static boolean showVoid = true;
 	public static boolean showRealType = true;
-	public static String[] builtin_packages = {"java", "javax", "sun", "com.sun", "traceprinter", "com.intellij", "org.junit", "jh61b.junit", "jh61b"};
+	public static String[] builtin_packages = {"java", "javax", "sun", "jdk", "com.sun", "traceprinter", "com.intellij", "org.junit", "jh61b.junit", "jh61b"};
 	public List<ReferenceType> staticListable = new ArrayList<>();
 	public ReferenceType stdinRT = null;
 	boolean showStringsAsValues = true;
@@ -239,9 +239,10 @@ public class JDI2JSON {
 		try {
 			sf.getArgumentValues();
 		} catch (com.sun.jdi.InternalException e) {
-			if (e.toString().contains("Unexpected JDWP Error: 35")) // expect JDWP error 35
+			if (e.toString().contains("Unexpected JDWP Error:")) {
+				// expect JDWP error 35
 				JDWPerror = true;
-			else {
+			} else {
 				throw e;
 			}
 		}

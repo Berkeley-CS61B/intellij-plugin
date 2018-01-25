@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>edu.berkeley.cs61b.plugin</id>
   <name>CS 61B</name>
-  <version>1.0.18</version>
+  <version>1.0.19</version>
   <vendor email="eli.lipsitz@berkeley.edu" url="http://datastructur.es">CS 61B Course Staff</vendor>
 
   <description><![CDATA[
@@ -10,7 +10,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
-      Update for Spring 2018
+      Attempt to fix issues with Java Visualizer not working.
     ]]>
   </change-notes>
 
