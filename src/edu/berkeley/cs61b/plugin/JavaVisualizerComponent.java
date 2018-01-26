@@ -29,8 +29,7 @@ public class JavaVisualizerComponent implements ProjectComponent {
 	}
 
 	private void attachToDebugger(XDebugProcess xDebugProcess) {
-		XDebugSession session = xDebugProcess.getSession();
-		JavaVisualizerManager manager = new JavaVisualizerManager(session);
+		JavaVisualizerManager manager = new JavaVisualizerManager(xDebugProcess);
 		manager.attach();
 	}
 

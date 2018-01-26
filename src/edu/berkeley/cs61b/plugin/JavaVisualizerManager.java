@@ -1,10 +1,14 @@
 package edu.berkeley.cs61b.plugin;
 
 import com.intellij.debugger.engine.SuspendContext;
+import com.intellij.execution.process.ProcessEvent;
+import com.intellij.execution.process.ProcessListener;
 import com.intellij.execution.ui.RunnerLayoutUi;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.util.Key;
 import com.intellij.ui.content.Content;
 import com.intellij.util.ui.UIUtil;
+import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.XDebugSessionListener;
 import com.sun.jdi.ThreadReference;
@@ -14,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
+import org.jetbrains.annotations.NotNull;
 import traceprinter.JDI2JSON;
 
 import javax.json.Json;
@@ -25,7 +30,8 @@ import java.util.ArrayList;
 public class JavaVisualizerManager implements XDebugSessionListener {
 	private static final String CONTENT_ID = "61B.JavaVisualizerContent2";
 
-	private XDebugSession session;
+	private XDebugProcess debugProcess;
+	private XDebugSession debugSession;
 	private Content content;
 	private JComponent component;
 	private WebView webView;
@@ -34,14 +40,33 @@ public class JavaVisualizerManager implements XDebugSessionListener {
 
 	private String lastTrace = null;
 
-	public JavaVisualizerManager(XDebugSession session) {
-		this.session = session;
+	public JavaVisualizerManager(XDebugProcess process) {
+		this.debugProcess = process;
+		this.debugSession = process.getSession();
 		this.content = null;
 		this.jdi2json = new JDI2JSON();
 	}
 
 	public void attach() {
-		session.addSessionListener(this);
+		debugProcess.getProcessHandler().addProcessListener(new ProcessListener() {
+			@Override
+			public void startNotified(@NotNull ProcessEvent processEvent) {
+				initializeContent();
+			}
+
+			@Override
+			public void processTerminated(@NotNull ProcessEvent processEvent) {
+			}
+
+			@Override
+			public void processWillTerminate(@NotNull ProcessEvent processEvent, boolean b) {
+			}
+
+			@Override
+			public void onTextAvailable(@NotNull ProcessEvent processEvent, @NotNull Key key) {
+			}
+		});
+		debugSession.addSessionListener(this);
 	}
 
 	private void initializeComponent() {
@@ -63,7 +88,7 @@ public class JavaVisualizerManager implements XDebugSessionListener {
 
 	private void initializeContent() {
 		initializeComponent();
-		RunnerLayoutUi ui = session.getUI();
+		RunnerLayoutUi ui = debugSession.getUI();
 		content = ui.createContent(
 				CONTENT_ID,
 				component,
@@ -80,7 +105,7 @@ public class JavaVisualizerManager implements XDebugSessionListener {
 		}
 
 		try {
-			SuspendContext sc = (SuspendContext) session.getSuspendContext();
+			SuspendContext sc = (SuspendContext) debugSession.getSuspendContext();
 			ThreadReference reference = sc.getThread().getThreadReference();
 
 			ArrayList<JsonObject> objs = jdi2json.convertExecutionPoint(reference);
