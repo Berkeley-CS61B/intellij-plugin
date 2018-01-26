@@ -46,13 +46,11 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -97,6 +95,48 @@ public class JDI2JSON {
 				result.add(me.getKey(), me.getValue());
 		}
 		return result.build();
+	}
+
+	private static String displayNameForType(ObjectReference obj) {
+		String fullName = obj.referenceType().name();
+		if (fullName.indexOf("$") > 0) {
+			// inner, local, anonymous or lambda class
+			if (fullName.contains("$$Lambda")) {
+				fullName = "&lambda;" + fullName.substring(fullName.indexOf("$$Lambda") + 9); // skip $$lambda$
+				try {
+					String interf = ((ClassType) obj.referenceType()).interfaces().get(0).name();
+					if (interf.startsWith("java.util.function."))
+						interf = interf.substring(19);
+
+					fullName += " [" + interf + "]";
+				} catch (Exception e) {
+				}
+			}
+			// more cases here?
+			else {
+				fullName = fullName.substring(1 + fullName.indexOf('$'));
+				if (fullName.matches("[0-9]+"))
+					fullName = "anonymous class " + fullName;
+				else if (fullName.substring(0, 1).matches("[0-9]+"))
+					fullName = "local class " + fullName.substring(1);
+			}
+		}
+		return fullName;
+	}
+
+	private static boolean doesImplementInterface(ObjectReference obj, String iface) {
+		if (obj.referenceType() instanceof ClassType) {
+			Queue<InterfaceType> queue = new LinkedList<>();
+			queue.addAll(((ClassType) obj.referenceType()).interfaces());
+			while (!queue.isEmpty()) {
+				InterfaceType t = queue.poll();
+				if (t.name().equals(iface)) {
+					return true;
+				}
+				queue.addAll(t.superinterfaces());
+			}
+		}
+		return false;
 	}
 
 	// returns null when nothing changed since the last time
@@ -333,6 +373,10 @@ public class JDI2JSON {
 				.add("frame_id", frame_ticker);//frame_stack.get(level));
 	}
 
+
+
+	/* JSON utility methods */
+
 	// used to show a single non-user frame when there is
 	// non-user code running between two user frames
 	private JsonObjectBuilder convertFrameStub(StackFrame sf) {
@@ -361,10 +405,6 @@ public class JDI2JSON {
 			result.add("" + id, convertObject(obj, true));
 		}
 	}
-
-
-
-    /* JSON utility methods */
 
 	private JsonValue convertObject(ObjectReference obj, boolean fullVersion) {
 		if (showStringsAsValues && obj.referenceType().name().startsWith("java.lang.")
@@ -533,48 +573,6 @@ public class JDI2JSON {
 			}
 			return result.build();
 		}
-	}
-
-	private static String displayNameForType(ObjectReference obj) {
-		String fullName = obj.referenceType().name();
-		if (fullName.indexOf("$") > 0) {
-			// inner, local, anonymous or lambda class
-			if (fullName.contains("$$Lambda")) {
-				fullName = "&lambda;" + fullName.substring(fullName.indexOf("$$Lambda") + 9); // skip $$lambda$
-				try {
-					String interf = ((ClassType) obj.referenceType()).interfaces().get(0).name();
-					if (interf.startsWith("java.util.function."))
-						interf = interf.substring(19);
-
-					fullName += " [" + interf + "]";
-				} catch (Exception e) {
-				}
-			}
-			// more cases here?
-			else {
-				fullName = fullName.substring(1 + fullName.indexOf('$'));
-				if (fullName.matches("[0-9]+"))
-					fullName = "anonymous class " + fullName;
-				else if (fullName.substring(0, 1).matches("[0-9]+"))
-					fullName = "local class " + fullName.substring(1);
-			}
-		}
-		return fullName;
-	}
-
-	private static boolean doesImplementInterface(ObjectReference obj, String iface) {
-		if (obj.referenceType() instanceof ClassType) {
-			Queue<InterfaceType> queue = new LinkedList<>();
-			queue.addAll(((ClassType) obj.referenceType()).interfaces());
-			while (!queue.isEmpty()) {
-				InterfaceType t = queue.poll();
-				if (t.name().equals(iface)) {
-					return true;
-				}
-				queue.addAll(t.superinterfaces());
-			}
-		}
-		return false;
 	}
 
 	private JsonArray jsonArray(Object... args) {

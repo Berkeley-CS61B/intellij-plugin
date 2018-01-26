@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>edu.berkeley.cs61b.plugin</id>
   <name>CS 61B</name>
-  <version>1.0.19</version>
+  <version>1.0.20</version>
   <vendor email="eli.lipsitz@berkeley.edu" url="http://datastructur.es">CS 61B Course Staff</vendor>
 
   <description><![CDATA[
@@ -10,7 +10,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
-      Attempt to fix issues with Java Visualizer not working.
+      Continue attempt to fix issues with Java Visualizer not working.
     ]]>
   </change-notes>
 
@@ -27,15 +27,18 @@
     <toolWindow id="Style Checker" anchor="bottom" factoryClass="edu.berkeley.cs61b.plugin.CheckStyleToolWindowFactory" icon="/icons/checkstyle.png"/>
   </extensions>
 
+  <project-components>
+    <component>
+      <implementation-class>edu.berkeley.cs61b.plugin.JavaVisualizerComponent</implementation-class>
+
+      <loadForDefaultProject />
+    </component>
+  </project-components>
+
   <actions>
     <action id="61B.CheckStyle" class="edu.berkeley.cs61b.plugin.CheckStyleAction" text="Check Style"
             description="Run the CS 61B style checker" icon="/icons/checkstyle.png">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="AnalyzeMenu"/>
-    </action>
-    <action id="61B.JavaVisualizer" class="edu.berkeley.cs61b.plugin.JavaVisualizerAction" text="Java Visualizer"
-            description="Show the Java Visualizer" icon="/icons/jv.png">
-      <!--<add-to-group group-id="DebugMainMenu" anchor="last"/>-->
-      <add-to-group group-id="XDebugger.ToolWindow.LeftToolbar" anchor="last"/>
     </action>
   </actions>
 
