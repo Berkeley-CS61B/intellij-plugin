@@ -1,9 +1,15 @@
 package edu.berkeley.cs61b.plugin;
 
+import com.intellij.debugger.DebuggerManager;
+import com.intellij.debugger.engine.DebugProcess;
+import com.intellij.debugger.engine.DebuggerManagerThreadImpl;
 import com.intellij.debugger.engine.SuspendContext;
+import com.intellij.debugger.engine.managerThread.DebuggerCommand;
+import com.intellij.debugger.engine.managerThread.DebuggerManagerThread;
 import com.intellij.execution.process.ProcessEvent;
 import com.intellij.execution.process.ProcessListener;
 import com.intellij.execution.ui.RunnerLayoutUi;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.util.Key;
 import com.intellij.ui.content.Content;
@@ -25,6 +31,8 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.swing.JComponent;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import java.util.ArrayList;
 
 public class JavaVisualizerManager implements XDebugSessionListener {
@@ -37,10 +45,10 @@ public class JavaVisualizerManager implements XDebugSessionListener {
 	private WebView webView;
 	private boolean webViewReady;
 	private JDI2JSON jdi2json;
+	private Project project;
 
-	private String lastTrace = null;
-
-	public JavaVisualizerManager(XDebugProcess process) {
+	public JavaVisualizerManager(Project project, XDebugProcess process) {
+		this.project = project;
 		this.debugProcess = process;
 		this.debugSession = process.getSession();
 		this.content = null;
@@ -77,11 +85,22 @@ public class JavaVisualizerManager implements XDebugSessionListener {
 			webView.getEngine().setOnStatusChanged((WebEvent<String> e) -> {
 				if (e != null && e.getData() != null && e.getData().equals("Ready")) {
 					webViewReady = true;
-					visualize();
 				}
 			});
 			webView.getEngine().load(getClass().getResource("/web/visualizer.html").toExternalForm());
 			jfxPanel.setScene(new Scene(webView));
+		});
+
+		jfxPanel.addAncestorListener(new AncestorListener() {
+			public void ancestorAdded(AncestorEvent event) {
+				forceRefreshVisualizer();
+			}
+
+			public void ancestorRemoved(AncestorEvent event) {
+			}
+
+			public void ancestorMoved(AncestorEvent event) {
+			}
 		});
 		component = jfxPanel;
 	}
@@ -105,30 +124,51 @@ public class JavaVisualizerManager implements XDebugSessionListener {
 		}
 
 		try {
-			SuspendContext sc = (SuspendContext) debugSession.getSuspendContext();
-			ThreadReference reference = sc.getThread().getThreadReference();
-
-			ArrayList<JsonObject> objs = jdi2json.convertExecutionPoint(reference);
-			if (objs.size() > 0) {
-				JsonArrayBuilder arr = Json.createArrayBuilder();
-				objs.forEach(arr::add);
-				lastTrace = arr.build().toString();
-
-				visualize();
+			if (component.isShowing()) {
+				traceAndVisualize();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void visualize() {
-		if (lastTrace != null) {
-			Platform.runLater(() -> {
-				if (webView != null && webViewReady) {
-					JSObject window = (JSObject) webView.getEngine().executeScript("window");
-					window.call("visualize", lastTrace);
-				}
-			});
+	private void forceRefreshVisualizer() {
+		DebugProcess p = DebuggerManager.getInstance(project).getDebugProcess(debugSession.getDebugProcess().getProcessHandler());
+		p.getManagerThread().invokeCommand(new DebuggerCommand() {
+			@Override
+			public void action() {
+				traceAndVisualize();
+			}
+
+			@Override
+			public void commandCancelled() {
+			}
+		});
+	}
+
+	private void traceAndVisualize() {
+		try {
+			SuspendContext sc = (SuspendContext) debugSession.getSuspendContext();
+			if (sc == null) {
+				return;
+			}
+			ThreadReference reference = sc.getThread().getThreadReference();
+
+			ArrayList<JsonObject> objs = jdi2json.convertExecutionPoint(reference);
+			if (objs.size() > 0) {
+				JsonArrayBuilder arr = Json.createArrayBuilder();
+				objs.forEach(arr::add);
+				String lastTrace = arr.build().toString();
+
+				Platform.runLater(() -> {
+					if (webView != null && webViewReady) {
+						JSObject window = (JSObject) webView.getEngine().executeScript("window");
+						window.call("visualize", lastTrace);
+					}
+				});
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

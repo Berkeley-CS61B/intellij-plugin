@@ -29,7 +29,7 @@ public class JavaVisualizerComponent implements ProjectComponent {
 	}
 
 	private void attachToDebugger(XDebugProcess xDebugProcess) {
-		JavaVisualizerManager manager = new JavaVisualizerManager(xDebugProcess);
+		JavaVisualizerManager manager = new JavaVisualizerManager(project, xDebugProcess);
 		manager.attach();
 	}
 
