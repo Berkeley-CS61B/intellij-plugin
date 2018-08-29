@@ -125,6 +125,7 @@ public class CheckStyleAction extends AnAction {
 		} catch (Exception e) {
 			consoleView.print("Unable to start style checker (2): " + e.getMessage() + "\n", ConsoleViewContentType.ERROR_OUTPUT);
 			e.printStackTrace();
+
 		} catch (Error e) {
 			consoleView.print("Error running style checking: " + e.getMessage() + "\n", ConsoleViewContentType.ERROR_OUTPUT);
 			e.printStackTrace();

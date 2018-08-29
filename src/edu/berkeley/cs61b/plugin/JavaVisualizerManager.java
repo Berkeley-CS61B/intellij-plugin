@@ -133,17 +133,21 @@ public class JavaVisualizerManager implements XDebugSessionListener {
 	}
 
 	private void forceRefreshVisualizer() {
-		DebugProcess p = DebuggerManager.getInstance(project).getDebugProcess(debugSession.getDebugProcess().getProcessHandler());
-		p.getManagerThread().invokeCommand(new DebuggerCommand() {
-			@Override
-			public void action() {
-				traceAndVisualize();
-			}
+		try {
+			DebugProcess p = DebuggerManager.getInstance(project).getDebugProcess(debugSession.getDebugProcess().getProcessHandler());
+			p.getManagerThread().invokeCommand(new DebuggerCommand() {
+				@Override
+				public void action() {
+					traceAndVisualize();
+				}
 
-			@Override
-			public void commandCancelled() {
-			}
-		});
+				@Override
+				public void commandCancelled() {
+				}
+			});
+		} catch (Exception e) {
+			System.out.println("unable to force refresh visualizer: " + e);
+		}
 	}
 
 	private void traceAndVisualize() {
