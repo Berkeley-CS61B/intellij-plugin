@@ -31,8 +31,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class CheckStyleAction extends AnAction {
-	private static final String checkstyleChecksXML = "cs61b_fa18_checks.xml";
-	private static final String checkstyleSuppressXML = "cs61b_fa18_suppressions.xml";
+	private static final String checkstyleChecksXML = "cs61b_sp19_checks.xml";
+	private static final String checkstyleSuppressXML = null;
 
 	@Override
 	public void update(AnActionEvent event) {
