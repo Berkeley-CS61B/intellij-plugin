@@ -1,39 +1,33 @@
-<idea-plugin version="2">
+<idea-plugin>
   <id>edu.berkeley.cs61b.plugin</id>
   <name>CS 61B</name>
-  <version>1.0.26</version>
+  <version>2.0.0</version>
   <vendor email="eli.lipsitz@berkeley.edu" url="http://datastructur.es">CS 61B Course Staff</vendor>
 
   <description><![CDATA[
       Plugin for CS 61B (Spring 2019) at UC Berkeley.
-      Includes a style checker (Checkstyle) and a built-in stack/heap visualizer (via Java Tutor).
+      Includes a style checker (Checkstyle).
+
+      This plugin no longer includes the Java Visualizer: it has been split off into
+      a separate plugin: (insert URL here).
     ]]></description>
 
   <change-notes><![CDATA[
-      Update for Spring 2019.
+      First version without the old version of the Java Visualizer.
+      Automated style configuration update.
     ]]>
   </change-notes>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="143.0"/>
+  <idea-version since-build="162.0"/>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends>
-  -->
+  <depends>com.intellij.modules.java</depends>
 
   <extensions defaultExtensionNs="com.intellij">
     <toolWindow id="Style Checker" anchor="bottom" factoryClass="edu.berkeley.cs61b.plugin.CheckStyleToolWindowFactory" icon="/icons/checkstyle.png"/>
   </extensions>
-
-  <project-components>
-    <component>
-      <implementation-class>edu.berkeley.cs61b.plugin.JavaVisualizerComponent</implementation-class>
-
-      <loadForDefaultProject />
-    </component>
-  </project-components>
 
   <actions>
     <action id="61B.CheckStyle" class="edu.berkeley.cs61b.plugin.CheckStyleAction" text="Check Style"
