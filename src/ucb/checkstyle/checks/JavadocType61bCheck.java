@@ -21,22 +21,22 @@ package ucb.checkstyle.checks;
 import com.puppycrawl.tools.checkstyle.api.Check;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.FileContents;
-import com.puppycrawl.tools.checkstyle.api.JavadocTagInfo;
 import com.puppycrawl.tools.checkstyle.api.Scope;
-import com.puppycrawl.tools.checkstyle.ScopeUtils;
 import com.puppycrawl.tools.checkstyle.api.TextBlock;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
-import com.puppycrawl.tools.checkstyle.Utils;
-import com.puppycrawl.tools.checkstyle.checks.CheckUtils;
 import com.puppycrawl.tools.checkstyle.checks.javadoc.InvalidJavadocTag;
 import com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTag;
+import com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTagInfo;
 import com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTags;
-import com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocUtils;
 
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import com.puppycrawl.tools.checkstyle.utils.CheckUtils;
+import com.puppycrawl.tools.checkstyle.utils.JavadocUtils;
+import com.puppycrawl.tools.checkstyle.utils.ScopeUtils;
 import org.apache.commons.beanutils.ConversionException;
 
 /**
@@ -194,14 +194,14 @@ public class JavadocType61bCheck
      */
     private boolean shouldCheck(final DetailAST aAST)
     {
-        if (ScopeUtils.inCodeBlock(aAST)) {
+        if (ScopeUtils.isInCodeBlock(aAST)) {
             return false;
         }
 
         final DetailAST mods = aAST.findFirstToken(TokenTypes.MODIFIERS);
         final Scope declaredScope = ScopeUtils.getScopeFromMods(mods);
         final Scope scope =
-            ScopeUtils.inInterfaceOrAnnotationBlock(aAST)
+            ScopeUtils.isInInterfaceOrAnnotationBlock(aAST)
                 ? Scope.PUBLIC : declaredScope;
         final Scope surroundingScope = ScopeUtils.getSurroundingScope(aAST);
 
@@ -251,7 +251,7 @@ public class JavadocType61bCheck
             final JavadocTag tag = aTags.get(i);
             if (tag.getTagName().equals(aTag)) {
                 tagCount++;
-                if (!aFormatPattern.matcher(tag.getArg1()).find()) {
+                if (!aFormatPattern.matcher(tag.getFirstArg()).find()) {
                     log(aLineNo, "type.tagFormat", "@" + aTag, aFormat);
                 }
             }
@@ -275,8 +275,8 @@ public class JavadocType61bCheck
         for (int i = aTags.size() - 1; i >= 0; i--) {
             final JavadocTag tag = aTags.get(i);
             if (tag.isParamTag()
-                && (tag.getArg1() != null)
-                && (tag.getArg1().indexOf("<" + aTypeParamName + ">") == 0))
+                && (tag.getFirstArg() != null)
+                && (tag.getFirstArg().indexOf("<" + aTypeParamName + ">") == 0))
             {
                 found = true;
             }
@@ -301,9 +301,9 @@ public class JavadocType61bCheck
             final JavadocTag tag = aTags.get(i);
             if (tag.isParamTag()) {
 
-                if (tag.getArg1() != null) {
+                if (tag.getFirstArg() != null) {
 
-                    final Matcher matcher = pattern.matcher(tag.getArg1());
+                    final Matcher matcher = pattern.matcher(tag.getFirstArg());
                     String typeParamName = null;
 
                     if (matcher.matches()) {

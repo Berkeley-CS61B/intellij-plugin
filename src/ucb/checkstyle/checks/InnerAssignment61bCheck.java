@@ -27,7 +27,7 @@ import antlr.collections.AST;
 import com.puppycrawl.tools.checkstyle.api.Check;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
-import com.puppycrawl.tools.checkstyle.Utils;
+import com.puppycrawl.tools.checkstyle.utils.TokenUtils;
 
 /**
  * <p>
@@ -108,7 +108,7 @@ public class InnerAssignment61bCheck
             allowedContext[i] = new int[tokens.countTokens()];
             for (int j = 0; j < allowedContext[i].length; j += 1) {
                 allowedContext[i][j] = 
-                    Utils.getTokenId(tokens.nextToken());
+                    TokenUtils.getTokenId(tokens.nextToken());
             }
         }
     }

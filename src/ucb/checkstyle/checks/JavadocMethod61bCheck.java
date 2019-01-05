@@ -27,16 +27,15 @@ import com.google.common.collect.Sets;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
 import com.puppycrawl.tools.checkstyle.api.FileContents;
 import com.puppycrawl.tools.checkstyle.api.FullIdent;
-import com.puppycrawl.tools.checkstyle.api.JavadocTagInfo;
 import com.puppycrawl.tools.checkstyle.api.Scope;
-import com.puppycrawl.tools.checkstyle.ScopeUtils;
 import com.puppycrawl.tools.checkstyle.api.TextBlock;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
-import com.puppycrawl.tools.checkstyle.Utils;
 import com.puppycrawl.tools.checkstyle.checks.AbstractTypeAwareCheck;
-import com.puppycrawl.tools.checkstyle.checks.CheckUtils;
 import com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTag;
 import com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTagInfo;
+import com.puppycrawl.tools.checkstyle.utils.CheckUtils;
+import com.puppycrawl.tools.checkstyle.utils.CommonUtils;
+import com.puppycrawl.tools.checkstyle.utils.ScopeUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,15 +127,15 @@ public class JavadocMethod61bCheck extends AbstractTypeAwareCheck {
 
     /** compiled regexp to match Javadoc tags that take an argument * */
     private static final Pattern MATCH_JAVADOC_ARG =
-        Utils.createPattern("@(throws|exception|param)\\s+(\\S+)\\s+\\S*");
+        CommonUtils.createPattern("@(throws|exception|param)\\s+(\\S+)\\s+\\S*");
 
     /** compiled regexp to match first part of multilineJavadoc tags * */
     private static final Pattern MATCH_JAVADOC_ARG_MULTILINE_START =
-        Utils.createPattern("@(throws|exception|param)\\s+(\\S+)\\s*$");
+        CommonUtils.createPattern("@(throws|exception|param)\\s+(\\S+)\\s*$");
 
     /** compiled regexp to look for a continuation of the comment * */
     private static final Pattern MATCH_JAVADOC_MULTILINE_CONT =
-        Utils.createPattern("(\\*/|@|[^\\s\\*])");
+        CommonUtils.createPattern("(\\*/|@|[^\\s\\*])");
 
     /** Multiline finished at end of comment * */
     private static final String END_JAVADOC = "*/";
@@ -145,13 +144,13 @@ public class JavadocMethod61bCheck extends AbstractTypeAwareCheck {
 
     /** compiled regexp to match Javadoc tags with no argument * */
     private static final Pattern MATCH_JAVADOC_NOARG =
-        Utils.createPattern("@(return|see)\\s+\\S");
+        CommonUtils.createPattern("@(return|see)\\s+\\S");
     /** compiled regexp to match first part of multilineJavadoc tags * */
     private static final Pattern MATCH_JAVADOC_NOARG_MULTILINE_START =
-        Utils.createPattern("@(return|see)\\s*$");
+        CommonUtils.createPattern("@(return|see)\\s*$");
     /** compiled regexp to match Javadoc tags with no argument and {} * */
     private static final Pattern MATCH_JAVADOC_NOARG_CURLY =
-        Utils.createPattern("\\{\\s*@(inheritDoc)\\s*\\}");
+        CommonUtils.createPattern("\\{\\s*@(inheritDoc)\\s*\\}");
 
     /** Maximum children allowed * */
     private static final int MAX_CHILDREN = 7;
@@ -252,7 +251,7 @@ public class JavadocMethod61bCheck extends AbstractTypeAwareCheck {
      * @param regex regex for matching method names.
      */
     public void setIgnoreMethodNamesRegex(String regex) {
-        ignoreMethodNamesRegex = Utils.createPattern(regex);
+        ignoreMethodNamesRegex = CommonUtils.createPattern(regex);
     }
 
     /**
@@ -631,7 +630,7 @@ public class JavadocMethod61bCheck extends AbstractTypeAwareCheck {
     private Scope calculateScope(final DetailAST ast) {
         final DetailAST mods = ast.findFirstToken(TokenTypes.MODIFIERS);
         final Scope declaredScope = ScopeUtils.getScopeFromMods(mods);
-        return ScopeUtils.inInterfaceOrAnnotationBlock(ast) ? Scope.PUBLIC
+        return ScopeUtils.isInInterfaceOrAnnotationBlock(ast) ? Scope.PUBLIC
                 : declaredScope;
     }
 
@@ -840,7 +839,7 @@ public class JavadocMethod61bCheck extends AbstractTypeAwareCheck {
                 continue;
             }
 
-            if (aText.equals(tag.getArg1())) {
+            if (aText.equals(tag.getFirstArg())) {
                 tagIt.remove();
                 return tag;
             }
@@ -956,7 +955,7 @@ public class JavadocMethod61bCheck extends AbstractTypeAwareCheck {
             JavadocTag tag = tagIt.next();
             if (tag.isParamTag()) {
                 log(tag.getLineNo(), tag.getColumnNo(), "javadoc.unusedTag",
-                    "@param", tag.getArg1());
+                    "@param", tag.getFirstArg());
                 tagIt.remove();
             }
         }
@@ -1064,7 +1063,7 @@ public class JavadocMethod61bCheck extends AbstractTypeAwareCheck {
      *
      * @param tags the tags to check
      * @param aThrows the throws to check
-     * @param aReportExpectedTags whether we should report if do not find
+     * @param reportExpectedTags whether we should report if do not find
      *            expected tag
      */
     private void checkThrowsTags(List<JavadocTag> tags,
@@ -1081,8 +1080,8 @@ public class JavadocMethod61bCheck extends AbstractTypeAwareCheck {
             tagIt.remove();
 
             // Loop looking for matching throw
-            final String documentedEx = tag.getArg1();
-            final Token token = new Token(tag.getArg1(), tag.getLineNo(), tag
+            final String documentedEx = tag.getFirstArg();
+            final Token token = new Token(tag.getFirstArg(), tag.getLineNo(), tag
                     .getColumnNo());
             final AbstractClassInfo documentedCI = createClassInfo(token,
                     getCurrentClassName());
@@ -1100,7 +1099,7 @@ public class JavadocMethod61bCheck extends AbstractTypeAwareCheck {
                 if (reqd) {
                     log(tag.getLineNo(), tag.getColumnNo(),
                         "javadoc.unusedTag",
-                        JavadocTagInfo.THROWS.getText(), tag.getArg1());
+                        JavadocTagInfo.THROWS.getText(), tag.getFirstArg());
                 }
             }
         }

@@ -24,9 +24,9 @@ import java.util.Arrays;
 
 import com.puppycrawl.tools.checkstyle.api.Check;
 import com.puppycrawl.tools.checkstyle.api.DetailAST;
-import com.puppycrawl.tools.checkstyle.ScopeUtils;
 import com.puppycrawl.tools.checkstyle.api.TokenTypes;
-import com.puppycrawl.tools.checkstyle.checks.CheckUtils;
+import com.puppycrawl.tools.checkstyle.utils.CheckUtils;
+import com.puppycrawl.tools.checkstyle.utils.ScopeUtils;
 
 /* This modification of MagicNumberCheck ignores ALL numeric literals
  * in constant declarations. */
@@ -190,7 +190,7 @@ public class MagicNumber61bCheck extends Check {
         }
 
         // implicit constant?
-        if (ScopeUtils.inInterfaceOrAnnotationBlock(varDefAST)
+        if (ScopeUtils.isInInterfaceOrAnnotationBlock(varDefAST)
             || varDefAST.getType() == TokenTypes.ENUM_CONSTANT_DEF) {
             return varDefAST;
         }
@@ -240,7 +240,7 @@ public class MagicNumber61bCheck extends Check {
      */
     private boolean isInHashCodeMethod(DetailAST ast) {
         // if not in a code block, can't be in hashCode()
-        if (!ScopeUtils.inCodeBlock(ast)) {
+        if (!ScopeUtils.isInCodeBlock(ast)) {
             return false;
         }
 

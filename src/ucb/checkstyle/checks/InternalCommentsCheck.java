@@ -346,9 +346,9 @@ public class InternalCommentsCheck extends Check
         /**
          * Describe a region of type starting at line start.
          *
-         * @param type type of this region (method, class, body,
+         * @param type0 type of this region (method, class, body,
          * etc.).
-         * @param start starting line number of region.
+         * @param start0 starting line number of region.
          */
         Span(SpanType type0, int start0) {
             type = type0;
