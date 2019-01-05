@@ -19,10 +19,15 @@ import com.puppycrawl.tools.checkstyle.ConfigurationLoader;
 import com.puppycrawl.tools.checkstyle.PropertiesExpander;
 import com.puppycrawl.tools.checkstyle.api.AuditEvent;
 import com.puppycrawl.tools.checkstyle.api.AuditListener;
+import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
 import org.xml.sax.InputSource;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -31,8 +36,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class CheckStyleAction extends AnAction {
-	private static final String checkstyleChecksXML = "cs61b_sp19_checks.xml";
-	private static final String checkstyleSuppressXML = null;
+	private static final String CONFIG_ROOT = "style_config/";
 
 	@Override
 	public void update(AnActionEvent event) {
@@ -74,7 +78,7 @@ public class CheckStyleAction extends AnAction {
 				checkerFiles.removeIf(p -> !p.getName().endsWith(".java"));
 
 				consoleView.clear();
-				String message = String.format("Running style checker on %d file(s) ...\n", checkerFiles.size());
+				String message = String.format("Running style checker on %d file(s) ", checkerFiles.size());
 				consoleView.print(message, ConsoleViewContentType.SYSTEM_OUTPUT);
 				runCheckStyle(project, consoleView, checkerFiles);
 			});
@@ -95,23 +99,55 @@ public class CheckStyleAction extends AnAction {
 		}
 	}
 
-	private void runCheckStyle(Project project, ConsoleView consoleView, List<File> files) {
-		Configuration config;
-		try {
-			if (checkstyleSuppressXML != null) {
-				System.setProperty("checkstyle.suppress.file", getClass().getClassLoader().getResource(checkstyleSuppressXML).toString());
+	/**
+	 * Determines the correct checks XML and suppressions XML to use based on the semester.
+	 * Reads from CONFIG_ROOT/index.txt
+	 *
+	 * @return a String array with: {config name, checks XML, suppressions XML}
+	 */
+	private String[] pickConfig(String semester) throws IOException {
+		InputStream indexStream = getClass().getClassLoader().getResourceAsStream(CONFIG_ROOT + "index.txt");
+		if (indexStream == null) {
+			throw new IOException("style check config index file not found");
+		}
+		BufferedReader r = new BufferedReader(new InputStreamReader(indexStream));
+		String line;
+		while ((line = r.readLine()) != null) {
+			line = line.trim();
+			if (line.isEmpty() || line.startsWith("#")) {
+				continue;
 			}
+			String[] data = line.split("\t");
+			if (semester.matches(data[0])) {
+				return new String[]{semester, CONFIG_ROOT + data[1], CONFIG_ROOT + data[2]};
+			}
+		}
+		throw new RuntimeException("No config file found for semester: " + semester);
+	}
+
+	private void runCheckStyle(Project project, ConsoleView consoleView, List<File> files) {
+
+		Configuration config;
+		String configName;
+		try {
+			String[] configFiles = pickConfig(PluginUtils.getSemesterID());
+			configName = configFiles[0];
+			String configChecks = configFiles[1];
+			String configSuppressions = configFiles[2];
+
+			System.setProperty("checkstyle.suppress.file", getClass().getClassLoader().getResource(configSuppressions).toString());
 
 			PropertiesExpander properties = new PropertiesExpander(System.getProperties());
-			InputSource configSource = new InputSource(getClass().getClassLoader().getResourceAsStream(checkstyleChecksXML));
+			InputSource configSource = new InputSource(getClass().getClassLoader().getResourceAsStream(configChecks));
 
 			config = ConfigurationLoader.loadConfiguration(configSource, properties, true);
 		} catch (Exception e) {
-			consoleView.print("Unable to start style checker (1): " + e.getMessage() + "\n", ConsoleViewContentType.ERROR_OUTPUT);
+			consoleView.print("Error loading style checker config: " + e.getMessage() + "\n", ConsoleViewContentType.ERROR_OUTPUT);
 			e.printStackTrace();
 			return;
 		}
 
+		consoleView.print("(config: " + configName + ")...\n", ConsoleViewContentType.SYSTEM_OUTPUT);
 		try {
 			Checker c = new Checker();
 			ClassLoader e = Checker.class.getClassLoader();
@@ -121,13 +157,13 @@ public class CheckStyleAction extends AnAction {
 
 			int numErrs = c.process(files);
 			c.destroy();
-			consoleView.print("Style checker completed with " + numErrs + " errors" + "\n", ConsoleViewContentType.SYSTEM_OUTPUT);
-		} catch (Exception e) {
-			consoleView.print("Unable to start style checker (2): " + e.getMessage() + "\n", ConsoleViewContentType.ERROR_OUTPUT);
-			e.printStackTrace();
-
-		} catch (Error e) {
-			consoleView.print("Error running style checking: " + e.getMessage() + "\n", ConsoleViewContentType.ERROR_OUTPUT);
+			if (numErrs > 0) {
+				consoleView.print("Style checker completed with " + numErrs + " errors." + "\n", ConsoleViewContentType.ERROR_OUTPUT);
+			} else {
+				consoleView.print("Style checker completed with no errors.", ConsoleViewContentType.SYSTEM_OUTPUT);
+			}
+		} catch (Throwable e) {
+			consoleView.print("Error running style checker: " + e.getMessage() + "\n", ConsoleViewContentType.ERROR_OUTPUT);
 			e.printStackTrace();
 		}
 	}

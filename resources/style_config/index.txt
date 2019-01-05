@@ -1,0 +1,24 @@
+# Style check index file
+# Format:
+# (regex for current semester)<tab character>(checks xml)<tab character>(suppressions xml)
+#
+# empty lines and lines beginning with '#' are ignored
+# the first line that matches will be used
+
+
+# Hilfinger semesters:
+fa18	cs61b_fa18_checks.xml	cs61b_fa18_suppressions.xml
+fa17	cs61b_fa17_checks.xml	cs61b_fa17_suppressions.xml
+fa\d+	cs61b_fa18_checks.xml	cs61b_fa18_suppressions.xml
+
+# Hug semesters:
+sp19	cs61b_sp19_checks.xml	no_suppressions.xml
+sp18	cs61b_sp18_checks.xml	no_suppressions.xml
+sp17	cs61b_sp17_checks.xml	no_suppressions.xml
+sp\d+	cs61b_sp19_checks.xml	no_suppressions.xml
+
+# Summer
+su\d+	cs61b_sp19_checks.xml	no_suppressions.xml
+
+# Default
+.*	cs61b_sp19_checks.xml	no_suppressions.xml
