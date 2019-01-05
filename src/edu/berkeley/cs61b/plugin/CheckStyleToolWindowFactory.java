@@ -13,9 +13,6 @@ import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-
 public class CheckStyleToolWindowFactory implements ToolWindowFactory {
 	static final Key<ConsoleView> KEY_CONSOLE = Key.create("style output console");
 
