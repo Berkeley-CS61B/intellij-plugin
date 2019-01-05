@@ -26,12 +26,12 @@
   <depends>com.intellij.modules.java</depends>
 
   <extensions defaultExtensionNs="com.intellij">
-    <toolWindow id="Style Checker" anchor="bottom" factoryClass="edu.berkeley.cs61b.plugin.CheckStyleToolWindowFactory" icon="/icons/checkstyle.png"/>
+    <toolWindow id="Style Checker" anchor="bottom" factoryClass="edu.berkeley.cs61b.plugin.CheckStyleToolWindowFactory" icon="/icons/style.png"/>
   </extensions>
 
   <actions>
     <action id="61B.CheckStyle" class="edu.berkeley.cs61b.plugin.CheckStyleAction" text="Check Style"
-            description="Run the CS 61B style checker" icon="/icons/checkstyle.png">
+            description="Run the CS 61B style checker" icon="/icons/style.png">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="AnalyzeMenu"/>
     </action>
   </actions>
