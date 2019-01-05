@@ -69,7 +69,7 @@ public class CheckStyleAction extends AnAction {
 				// upon activation, print some stuff out.
 				ContentManager contentManager = toolWindow.getContentManager();
 				Content content = contentManager.findContent("");
-				ConsoleView consoleView = (ConsoleView) content.getComponent();
+				ConsoleView consoleView = content.getUserData(CheckStyleToolWindowFactory.KEY_CONSOLE);
 
 				// iteratively add all files to a list
 				List<File> checkerFiles = new ArrayList<>();

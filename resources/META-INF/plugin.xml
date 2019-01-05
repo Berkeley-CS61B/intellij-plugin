@@ -34,6 +34,16 @@
             description="Run the CS 61B style checker" icon="/icons/style.png">
       <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="AnalyzeMenu"/>
     </action>
+
+    <group id="61B.CheckStyleToolbar" popup="false">
+      <action
+              id="61B.SettingsAction"
+              class="edu.berkeley.cs61b.plugin.SettingsAction"
+              text="Settings"
+              description="CS 61B Plugin Settings"
+              icon="/icons/settings.png"
+      />
+    </group>
   </actions>
 
 </idea-plugin>
