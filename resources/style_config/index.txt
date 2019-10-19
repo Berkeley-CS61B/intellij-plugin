@@ -7,6 +7,7 @@
 
 
 # Hilfinger semesters:
+sp20	cs61b_fa18_checks.xml	cs61b_fa18_suppressions.xml
 fa18	cs61b_fa18_checks.xml	cs61b_fa18_suppressions.xml
 fa17	cs61b_fa17_checks.xml	cs61b_fa17_suppressions.xml
 fa\d+	cs61b_fa18_checks.xml	cs61b_fa18_suppressions.xml
