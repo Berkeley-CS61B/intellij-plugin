@@ -13,9 +13,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
-      First version without the old version of the Java Visualizer.
-      For the updated (and now separate) Java Visualizer, see: https://plugins.jetbrains.com/plugin/11512-java-visualizer
-      Automated style configuration update.
+      Update style checker for Spring 2020 (Paul Hilfinger).
     ]]>
   </change-notes>
 
