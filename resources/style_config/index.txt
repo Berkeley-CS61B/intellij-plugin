@@ -10,16 +10,15 @@
 fa18	cs61b_fa18_checks.xml	cs61b_fa18_suppressions.xml
 fa17	cs61b_fa17_checks.xml	cs61b_fa17_suppressions.xml
 sp20  cs61b_sp20_checks.xml cs61b_sp20_suppressions.xml
-fa\d+	cs61b_sp20_checks.xml	cs61b_sp20_suppressions.xml
 
 # Hug semesters:
+fa20	cs61b_sp19_checks.xml	no_suppressions.xml
 sp19	cs61b_sp19_checks.xml	no_suppressions.xml
 sp18	cs61b_sp18_checks.xml	no_suppressions.xml
 sp17	cs61b_sp17_checks.xml	no_suppressions.xml
+
+# Defaults
+fa\d+	cs61b_sp20_checks.xml	cs61b_sp20_suppressions.xml
 sp\d+	cs61b_sp19_checks.xml	no_suppressions.xml
-
-# Summer
 su\d+	cs61b_sp19_checks.xml	no_suppressions.xml
-
-# Default
 .*	cs61b_sp19_checks.xml	no_suppressions.xml
