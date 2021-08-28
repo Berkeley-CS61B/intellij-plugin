@@ -78,7 +78,7 @@
         <!-- Checks for Javadoc comments.                     -->
         <!-- See http://checkstyle.sf.net/config_javadoc.html -->
 	<!-- and docs/config_javadoc.txt in the CS61B version.-->
-        <module name="JavadocMethod61b">
+        <module name="ucb.checkstyle.checks.JavadocMethod61bCheck">
           <property name="allowUndeclaredRTE" value="true"/>
           <property name="allowNarrativeParamTags" value="true"/>
           <property name="allowNarrativeReturnTags" value="true"/>
@@ -87,11 +87,11 @@
           <!--For now:-->
           <property name="allowMissingThrowsTags" value="true"/>
         </module>
-        <module name="JavadocType61b">
+        <module name="ucb.checkstyle.checks.JavadocType61bCheck">
           <property name="authorFormat" value="^\s*\w[-\w\s.]+"/>
           <property name="allowMissingParamTags" value="true"/>
         </module>
-        <module name="JavadocVariable61b"/>
+        <module name="ucb.checkstyle.checks.JavadocVariable61bCheck"/>
         <module name="JavadocStyle"/>
 
 
@@ -222,7 +222,7 @@
             <property name="format" value="^\s*$"/>
         </module>
 
-	<module name="InternalComments">
+	<module name="ucb.checkstyle.checks.InternalCommentsCheck">
 	    <property name="allowedCppFormats" value=""/>
             <property name="allowedCFormats" 
                       value="package class func init prestmts stmts @/\*(?i)\s*(fall\s*through\.?|ignore\s*\w+\.?|no\s+action)\s*\*/\s*@"/>
@@ -237,7 +237,7 @@
         <!-- Checks for blocks. You know, those {}'s         -->
         <!-- See http://checkstyle.sf.net/config_blocks.html -->
         <module name="EmptyBlock">
-          <property name="option" value="statement"/>
+          <property name="option" value="stmt"/>
           <property name="tokens" value="LITERAL_DO,LITERAL_ELSE,LITERAL_FINALLY,LITERAL_IF,LITERAL_FOR,LITERAL_TRY,INSTANCE_INIT,STATIC_INIT"/>
         </module>
         <module name="EmptyBlock">
@@ -255,11 +255,11 @@
         <module name="EmptyStatement"/>
         <module name="EqualsHashCode"/>
         <module name="HiddenField"/>
-        <module name="InnerAssignment61b">
+        <module name="ucb.checkstyle.checks.InnerAssignment61bCheck">
           <property name="allowedContext"
                     value="ASSIGN,RESOURCE"/>
         </module>
-        <module name="MagicNumber61b">
+        <module name="ucb.checkstyle.checks.MagicNumber61bCheck">
           <property name="ignoreNumbers"
                     value="-16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 100, 1000, 0.5, -0.5, 0.25, -0.25, 0.75, -0.75"/>
         </module>
