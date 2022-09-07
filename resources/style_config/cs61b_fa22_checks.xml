@@ -1,0 +1,249 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+          "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+          "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+
+<!--
+
+  Checkstyle configuration for CS61B.  Modified from sun_checks.xml, which checks the 
+  sun coding conventions from:
+
+    - the Java Language Specification at
+      http://java.sun.com/docs/books/jls/second_edition/html/index.html
+
+    - the Sun Code Conventions at http://java.sun.com/docs/codeconv/
+
+    - the Javadoc guidelines at
+      http://java.sun.com/j2se/javadoc/writingdoccomments/index.html
+
+    - the JDK Api documentation http://java.sun.com/j2se/docs/api/index.html
+
+    - some best practices
+
+  For information on configuration, see http://checkstyle.sf.net.
+
+  Most Checks are configurable, be sure to consult the documentation.
+
+  To completely disable a check, just comment it out or delete it from the file.
+
+  Finally, it is worth reading the documentation.
+
+-->
+
+<module name="Checker">
+
+    <!-- Checks whether files end with a new line.                        -->
+    <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
+    <module name="NewlineAtEndOfFile">
+        <property name="lineSeparator" value="lf_cr_crlf"/>
+    </module>
+
+    <!-- Checks for Size Violations.                    -->
+    <!-- See http://checkstyle.sf.net/config_sizes.html -->
+    <module name="FileLength">
+        <property name="max" value="2000"/>
+    </module>
+    <module name="LineLength">
+        <property name="max" value="120"/>
+    </module>
+
+    <!-- Checks for whitespace                               -->
+    <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+    <!-- note from Eli: I hate this rule. Tabs >> Spaces -->
+    <module name="FileTabCharacter"/>
+    <!-- this is to prevent the style checker from throwing an absurd amount of errors if you have tabs-->
+    <property name="tabWidth" value="4"/>
+    <!-- Note from Ethan: ??? -->
+
+    <module name="TreeWalker">
+        <!-- Checks for Naming Conventions.                  -->
+        <!-- See http://checkstyle.sf.net/config_naming.html -->
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+            <message key="name.invalidPattern" value="Constant ''{0}'' must be in ALL_CAPS." />
+        </module>
+        <module name="LocalFinalVariableName">
+            <property name="format" value="^([A-Z][0-9]*|[a-z][a-zA-Z0-9]*)$"/>
+            <message key="name.invalidPattern" value="Local final variable ''{0}'' must be in camelCase, or consist of a single upper-case letter." />
+        </module>
+        <module name="LocalVariableName">
+            <property name="format" value="^([A-Z][0-9]*|[a-z][a-zA-Z0-9]*)$"/>
+            <message key="name.invalidPattern" value="Local variable ''{0}'' must be in camelCase, or consist of a single upper-case letter." />
+        </module>
+        <module name="MemberName">
+            <property name="format" value="^_?[a-z][a-zA-Z0-9]*$|_?[A-Z]$"/>
+            <message key="name.invalidPattern" value="Instance variable ''{0}'' must be in camelCase, and may start with an underscore."/>
+        </module>
+        <module name="MethodName">
+            <property name="format" value="^([A-Z][0-9]*|[a-z][a-zA-Z0-9]*)$"/>
+            <message key="name.invalidPattern" value="Method name ''{0}'' must be in camelCase, or consist of a single upper-case letter." />
+        </module>
+        <module name="PackageName">
+            <property name="format" value="^[a-z][a-z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*$" />
+            <message key="name.invalidPattern" value="Package name ''{0}'' must start with a lower-case letter."/>
+        </module>
+        <module name="ParameterName">
+            <property name="format" value="^([A-Z][0-9]*|[a-z][a-zA-Z0-9]*)$"/>
+            <message key="name.invalidPattern" value="Parameter ''{0}'' must be in camelCase, or consist of a single upper-case letter." />
+        </module>
+        <module name="StaticVariableName">
+            <property name="format" value="^_?[a-z][a-zA-Z0-9]*$|_?[A-Z]$"/>
+            <message key="name.invalidPattern" value="Static variable ''{0}'' must be in camelCase, or consist of a single upper-case letter, and may start with an underscore." />
+        </module>
+        <module name="TypeName">
+            <property name="format" value="^[A-Z][A-Za-z0-9]*$"/>
+            <message key="name.invalidPattern" value="Type (class) name ''{0}'' must start with a capital letter."/>
+        </module>
+        <module name="ClassTypeParameterName">
+            <property name="format" value="^[A-Z][A-Za-z0-9]*$"/>
+            <message key="name.invalidPattern" value="Type parameter ''{0}'' must start with a capital letter."/>
+        </module>
+        <module name="MethodTypeParameterName">
+            <property name="format" value="^[A-Z][A-Za-z0-9]*$"/>
+            <message key="name.invalidPattern" value="Type parameter ''{0}'' must start with a capital letter."/>
+        </module>
+
+        <!-- Checks for imports                              -->
+        <!-- See http://checkstyle.sf.net/config_import.html -->
+        <!-- Don't check star imports because IntelliJ does this automatically -->
+        <module name="RedundantImport"/>
+        <module name="UnusedImports"/>
+
+        <!-- Checks for Size Violations.                    -->
+        <!-- See http://checkstyle.sf.net/config_sizes.html -->
+        <module name="MethodLength">
+            <property name="max" value="80"/>
+        </module>
+        <module name="ParameterNumber">
+            <property name="max" value="8"/>
+        </module>
+        <module name="OuterTypeNumber">
+            <property name="max" value="1"/>
+        </module>
+
+        <!-- Checks for whitespace                               -->
+        <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+        <!-- Check whitespace either side of <, > in generics -->
+        <module name="GenericWhitespace"/>
+        <module name="MethodParamPad"/>
+        <module name="NoWhitespaceAfter">
+            <!-- The check processes ARRAY_DECLARATOR and INDEX_OP tokens specially
+        from other tokens. Actually it is checked that there is no whitespace
+        before these tokens, not after them. Space after the ANNOTATIONS before
+        ARRAY_DECLARATOR and INDEX_OP will be ignored.  -->
+            <property name="tokens" value="AT"/>
+            <property name="tokens" value="INC"/>
+            <property name="tokens" value="DEC"/>
+            <property name="tokens" value="UNARY_MINUS"/>
+            <property name="tokens" value="UNARY_PLUS"/>
+            <property name="tokens" value="BNOT"/>
+            <property name="tokens" value="LNOT"/>
+            <property name="tokens" value="DOT"/>
+            <property name="tokens" value="METHOD_REF"/>
+            <property name="tokens" value="ARRAY_INIT"/>
+            <property name="tokens" value="ARRAY_DECLARATOR"/>
+            <property name="tokens" value="INDEX_OP"/>
+            <!-- Missing: TYPECAST, LITERAL_SNYCHRONIZED -->
+        </module>
+        <module name="NoWhitespaceBefore">
+            <property name="tokens" value="COMMA"/>
+            <property name="tokens" value="SEMI"/>
+            <property name="tokens" value="POST_INC"/>
+            <property name="tokens" value="POST_DEC"/>
+            <property name="tokens" value="GENERIC_START"/>
+            <property name="tokens" value="GENERIC_END"/>
+            <property name="tokens" value="ELLIPSIS"/>
+            <property name="tokens" value="LABELED_STAT"/>
+            <property name="tokens" value="METHOD_REF"/>
+        </module>
+        <module name="NoWhitespaceBefore">
+            <property name="allowLineBreaks" value="true"/>
+            <property name="tokens" value="DOT"/>
+        </module>
+        <module name="NoWhitespaceBeforeCaseDefaultColon"/>
+        <module name="ParenPad"/>
+        <module name="TypecastParenPad"/>
+        <module name="WhitespaceAfter"/>
+        <module name="WhitespaceAround"/>
+
+        <!-- Whitespace checks related to linebreaks -->
+        <module name="OperatorWrap"/>
+        <module name="SeparatorWrap"/>
+
+        <!-- Modifier Checks                                    -->
+        <!-- See http://checkstyle.sf.net/config_modifier.html -->
+        <module name="ModifierOrder"/>
+        <!-- <module name="RedundantModifier"/> --> <!-- Affects inner constructor weirdly -->
+
+        <!-- Checks for blocks. You know, those {}'s         -->
+        <!-- See http://checkstyle.sf.net/config_blocks.html -->
+        <module name="EmptyBlock">
+            <property name="option" value="statement"/>
+            <property name="tokens" value="LITERAL_DO"/>
+            <property name="tokens" value="LITERAL_ELSE"/>
+            <property name="tokens" value="LITERAL_FINALLY"/>
+            <property name="tokens" value="LITERAL_IF"/>
+            <property name="tokens" value="LITERAL_FOR"/>
+            <property name="tokens" value="LITERAL_TRY"/>
+            <property name="tokens" value="INSTANCE_INIT"/>
+            <property name="tokens" value="STATIC_INIT"/>
+            <property name="tokens" value="LITERAL_SWITCH"/>
+        </module>
+        <module name="EmptyBlock">
+            <property name="option" value="text"/>
+            <property name="tokens" value="LITERAL_CATCH,LITERAL_WHILE"/>
+        </module>
+        <module name="LeftCurly"/>
+        <module name="NeedBraces"/>
+        <module name="RightCurly"/>
+
+        <!-- Checks for common coding problems               -->
+        <!-- See http://checkstyle.sf.net/config_coding.html -->
+        <module name="EmptyStatement"/>
+        <module name="FallThrough"/>
+        <module name="HiddenField">
+            <property name="ignoreConstructorParameter" value="true"/>
+            <property name="ignoreSetter" value="true"/>
+        </module>
+        <module name="IllegalCatch">
+            <property name="illegalClassNames" value="java.lang.Exception, java.lang.Throwable,
+                             java.lang.Error"/>
+        </module>
+        <module name="InnerAssignment"/>
+        <module name="MagicNumber">
+            <property name="ignoreNumbers" value="-1, 0, 1, 2, 0.25, 0.5"/>
+        </module>
+        <module name="MissingSwitchDefault"/>
+        <module name="ModifiedControlVariable">
+            <property name="skipEnhancedForLoopVariable" value="true"/>
+        </module>
+        <module name="OneStatementPerLine"/>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+        <module name="StringLiteralEquality"/>
+
+        <!-- Checks for class design                         -->
+        <!-- See http://checkstyle.sf.net/config_design.html -->
+        <module name="InterfaceIsType"/>
+        <module name="OneTopLevelClass"/>
+        <module name="VisibilityModifier">
+            <property name="protectedAllowed" value="true"/>
+            <property name="packageAllowed" value="true"/>
+            <message key="variable.notPrivate" value="Class member (field) ''{0}'' may not be public."/>
+        </module>
+
+        <!-- Miscellaneous other checks.                   -->
+        <!-- See http://checkstyle.sf.net/config_misc.html -->
+        <module name="ArrayTypeStyle"/>
+        <module name="CommentsIndentation"/>
+        <module name="Indentation"/>
+        <module name="NoCodeInFile"/>
+        <module name="TodoComment">
+            <property name="format" value="(?i:((TODO)|(FIXME)))"/>
+            <message key="todo.match" value="Found a TODO or FIXME comment"/>
+        </module>
+        <module name="UpperEll"/>
+
+    </module>
+
+</module>

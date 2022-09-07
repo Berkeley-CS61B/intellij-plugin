@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>edu.berkeley.cs61b.plugin</id>
   <name>CS 61B</name>
-  <version>2.0.4</version>
+  <version>2.0.5</version>
   <vendor email="cs61b@berkeley.edu" url="http://datastructur.es">CS 61B Course Staff</vendor>
 
   <description><![CDATA[
@@ -13,7 +13,7 @@
     ]]></description>
 
   <change-notes><![CDATA[
-      Update style checker for Spring 2022 (Paul N. Hilfinger).
+      Update style checker for Fall 2022 (Josh Hug).
     ]]>
   </change-notes>
 
