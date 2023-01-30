@@ -4,6 +4,6 @@
 
 ## [Unreleased]
 
-## [2.0.6]
+## [2.0.7]
 ### Changed
-- Updated style checker for Spring 2023 semester
+- Fix style checker for Spring 2023 semester
