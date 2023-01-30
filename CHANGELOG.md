@@ -5,5 +5,8 @@
 ## [Unreleased]
 
 ## [2.0.6]
+- Update for SP23
+
+## [2.0.6]
 ### Changed
 - Updated style checker for Spring 2023 semester
