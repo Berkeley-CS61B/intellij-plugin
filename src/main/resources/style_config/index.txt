@@ -14,6 +14,7 @@ fa21	cs61b_sp20_checks.xml	cs61b_sp20_suppressions.xml
 sp22	cs61b_sp20_checks.xml	cs61b_sp20_suppressions.xml
 
 # Hug semesters:
+fa22	cs61b_sp23_checks.xml	no_suppressions.xml
 fa22	cs61b_fa22_checks.xml	no_suppressions.xml
 fa20	cs61b_sp19_checks.xml	no_suppressions.xml
 sp19	cs61b_sp19_checks.xml	no_suppressions.xml
