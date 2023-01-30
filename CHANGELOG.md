@@ -5,5 +5,8 @@
 ## [Unreleased]
 
 ## [2.0.7]
+- Fix Spring 2023 style checker
+
+## [2.0.7]
 ### Changed
 - Fix style checker for Spring 2023 semester
