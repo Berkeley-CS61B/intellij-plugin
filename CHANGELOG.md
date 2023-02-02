@@ -4,6 +4,6 @@
 
 ## [Unreleased]
 
-## [2.0.7]
+## [2.0.8]
 ### Changed
-- Fix style checker for Spring 2023 semester
+- Add plugin icon
