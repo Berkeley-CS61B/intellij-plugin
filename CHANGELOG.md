@@ -5,5 +5,8 @@
 ## [Unreleased]
 
 ## [2.0.9]
+- Compatible with 2022.3 IntelliJ version
+
+## [2.0.9]
 ### Changed
 - Compatible with 2022.3 IntelliJ version
