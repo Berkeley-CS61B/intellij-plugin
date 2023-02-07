@@ -4,6 +4,6 @@
 
 ## [Unreleased]
 
-## [2.0.8]
+## [2.0.9]
 ### Changed
-- Add plugin icon
+- Compatible with 2022.3 IntelliJ version
