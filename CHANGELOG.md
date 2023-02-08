@@ -4,6 +4,7 @@
 
 ## [Unreleased]
 
-## [2.0.9]
+## [2.0.10]
 ### Changed
-- Compatible with 2022.3 IntelliJ version
+- Make magic number check more lenient
+- Update compatability settings to 213+
