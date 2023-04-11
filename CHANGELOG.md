@@ -4,6 +4,6 @@
 
 ## [Unreleased]
 
-## [2.0.10]
+## [2.0.11]
 ### Changed
-- Make magic number check more lenient
+- Update compatability settings to 213+
