@@ -4,6 +4,6 @@
 
 ## [Unreleased]
 
-## [2.0.11]
+## [2.0.12]
 ### Changed
 - Update compatability settings to 213+
