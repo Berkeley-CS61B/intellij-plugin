@@ -8,4 +8,5 @@
 
 ### Changed
 
-- Update deprecated ActionUpdateThread
+
+- Fall 2024 style checker
