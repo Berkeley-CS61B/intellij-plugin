@@ -4,9 +4,9 @@
 
 ## [Unreleased]
 
-## [2.0.15]
+## [2.0.16]
 
 ### Changed
 
 
-- Fall 2024 style checker
+- Spring 2025 style checker
