@@ -8,4 +8,4 @@
 
 ### Changed
 
-- Spring 2025 style checker
+- Spring 2025 Style Checker
