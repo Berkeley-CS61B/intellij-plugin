@@ -91,9 +91,9 @@ jobs:
 
       - name: Clean up disk space
         run: |
-        sudo rm -rf /usr/share/dotnet
-        sudo rm -rf /usr/local/lib/android
-        sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
 
       # Cache Plugin Verifier IDEs
       - name: Setup Plugin Verifier IDEs Cache
