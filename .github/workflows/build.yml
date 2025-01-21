@@ -35,7 +35,7 @@ jobs:
 
       # Clear Gradle cache
       - name: Clear Gradle Cache
-        run: rm -rf ~/.gradle/caches
+        run: rm -rf ~/.gradle/caches ~/.gradle/wrapper ~/.gradle/native
 
       # Free GitHub Actions Environment Disk Space
       - name: Maximize Build Space
