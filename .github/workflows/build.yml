@@ -37,6 +37,12 @@ jobs:
       - name: Clear Gradle Cache
         run: rm -rf ~/.gradle/caches ~/.gradle/wrapper ~/.gradle/native
 
+      # Setup fresh Gradle
+      - name: Set Up Fresh Gradle User Home
+      env:
+        GRADLE_USER_HOME: ${{ runner.temp }}/gradle
+      run: ./gradlew clean --refresh-dependencies
+
       # Free GitHub Actions Environment Disk Space
       - name: Maximize Build Space
         uses: jlumbroso/free-disk-space@main
