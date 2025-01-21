@@ -33,6 +33,10 @@ jobs:
       changelog: ${{ steps.properties.outputs.changelog }}
     steps:
 
+      # Clear Gradle cache
+      - name: Clear Gradle Cache
+        run: rm -rf ~/.gradle/caches
+
       # Free GitHub Actions Environment Disk Space
       - name: Maximize Build Space
         uses: jlumbroso/free-disk-space@main
