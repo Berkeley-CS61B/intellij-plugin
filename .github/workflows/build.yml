@@ -33,14 +33,6 @@ jobs:
       changelog: ${{ steps.properties.outputs.changelog }}
     steps:
 
-      # Clear Gradle cache
-      - name: Clear Gradle Cache
-        run: rm -rf ~/.gradle/caches ~/.gradle/wrapper ~/.gradle/native
-
-      # Setup fresh Gradle
-      - name: Set Up Fresh Gradle User Home
-        run: ./gradlew clean --refresh-dependencies
-
       # Free GitHub Actions Environment Disk Space
       - name: Maximize Build Space
         uses: jlumbroso/free-disk-space@main
@@ -56,12 +48,12 @@ jobs:
       - name: Gradle Wrapper Validation
         uses: gradle/wrapper-validation-action@v1.0.4
 
-      # Setup Java 17 environment for the next steps
+      # Setup Java 11 environment for the next steps
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: zulu
-          java-version: 17
+          java-version: 11
 
       # Set environment variables
       - name: Export Properties

@@ -1,24 +1,8 @@
 package edu.berkeley.cs61b.plugin;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-import org.xml.sax.InputSource;
-
 import com.intellij.execution.filters.OpenFileHyperlinkInfo;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
-import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -36,6 +20,19 @@ import com.puppycrawl.tools.checkstyle.PropertiesExpander;
 import com.puppycrawl.tools.checkstyle.api.AuditEvent;
 import com.puppycrawl.tools.checkstyle.api.AuditListener;
 import com.puppycrawl.tools.checkstyle.api.Configuration;
+import org.xml.sax.InputSource;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 public class CheckStyleAction extends AnAction {
 	private static final String CONFIG_ROOT = "style_config/";
@@ -85,11 +82,6 @@ public class CheckStyleAction extends AnAction {
 				runCheckStyle(project, consoleView, checkerFiles);
 			});
 		}
-	}
-
-	@Override
-	public @NotNull ActionUpdateThread getActionUpdateThread() {
-		return ActionUpdateThread.BGT;
 	}
 
 	private void collectFiles(VirtualFile[] parent, List<File> list) {
